@@ -20,6 +20,15 @@ interface AuthResponse {
   user: User;
 }
 
+interface ForgotPasswordResponse {
+  message: string;
+}
+
+interface ResetPasswordData {
+  token: string;
+  password: string;
+}
+
 // Hook para obtener el usuario actual
 export const useCurrentUser = () => {
   return useQuery({
@@ -101,4 +110,76 @@ export const useLogout = () => {
     queryClient.setQueryData(['currentUser'], null);
     queryClient.clear();
   };
+};
+
+// Hook para solicitar recuperación de contraseña
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const { data } = await apiClient.post<ForgotPasswordResponse>(
+        '/auth/forgot-password',
+        { email }
+      );
+      return data;
+    },
+  });
+};
+
+// Hook para verificar token de recuperación
+export const useVerifyResetToken = (token: string | null) => {
+  return useQuery({
+    queryKey: ['verifyResetToken', token],
+    queryFn: async () => {
+      const { data } = await apiClient.get<{ valid: boolean; email: string }>(
+        `/auth/verify-reset-token/${token}`
+      );
+      return data;
+    },
+    enabled: !!token,
+    retry: false,
+  });
+};
+
+// Hook para restablecer contraseña
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: async (resetData: ResetPasswordData) => {
+      const { data } = await apiClient.post<ForgotPasswordResponse>(
+        '/auth/reset-password',
+        resetData
+      );
+      return data;
+    },
+  });
+};
+
+// Hook para actualizar perfil
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (profileData: { name: string; email: string }) => {
+      const { data } = await apiClient.put<User>('/auth/profile', profileData);
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(['currentUser'], data);
+    },
+  });
+};
+
+// Hook para cambiar contraseña
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: async (passwordData: {
+      currentPassword: string;
+      newPassword: string;
+    }) => {
+      const { data } = await apiClient.put<{ message: string }>(
+        '/auth/change-password',
+        passwordData
+      );
+      return data;
+    },
+  });
 };

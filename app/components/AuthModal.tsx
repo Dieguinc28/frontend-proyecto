@@ -9,6 +9,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import CloseIcon from '@mui/icons-material/Close';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import Link from 'next/link';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -177,6 +178,15 @@ export default function AuthModal({
                     minLength={6}
                   />
                 </div>
+                {mode === 'login' && (
+                  <Link
+                    href="/forgot-password"
+                    className="forgot-password-link"
+                    onClick={onClose}
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </Link>
+                )}
               </div>
 
               <button

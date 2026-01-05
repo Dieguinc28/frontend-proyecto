@@ -11,6 +11,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import SettingsIcon from '@mui/icons-material/Settings';
 import AuthModal from './AuthModal';
 import CartSidebar from './CartSidebar';
 import { useCart } from '../context/CartContext';
@@ -141,6 +142,14 @@ export default function SimpleHeader({
                         <MenuBookIcon fontSize="small" />
                         Mis Listas
                       </Link>
+                      <Link
+                        href="/settings"
+                        className="dropdown-item"
+                        onClick={() => setAccountMenuOpen(false)}
+                      >
+                        <SettingsIcon fontSize="small" />
+                        Configuración
+                      </Link>
                       <div className="dropdown-divider"></div>
                       <button
                         className="dropdown-item logout-item"
@@ -261,6 +270,14 @@ export default function SimpleHeader({
               >
                 <MenuBookIcon fontSize="small" />
                 Mis Listas
+              </Link>
+              <Link
+                href="/settings"
+                className="mobile-nav-link"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <SettingsIcon fontSize="small" />
+                Configuración
               </Link>
               <button
                 className="mobile-nav-link logout-mobile"
