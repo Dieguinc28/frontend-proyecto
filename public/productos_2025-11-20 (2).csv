@@ -1,0 +1,8 @@
+﻿sep=;
+ID;Nombre;Descripcion;Precio;Stock;Categoria
+6;buenos productos;1212122;12.00;12;Cuadernos
+5;Tijeras Escolares;Tijeras de punta roma, 5 pulgadas;25.00;60;Herramientas
+4;Carpeta Tamaño Carta;Carpeta de plástico con broche;15.00;80;Organización
+3;Lápiz HB;Lápiz grafito HB con goma;5.50;150;Escritura
+2;Bolígrafo Azul;Bolígrafo de tinta azul, punta fina;8.00;200;Escritura
+1;Cuaderno Profesional;Cuaderno de 100 hojas, cuadrícula;35.50;50;Cuadernos
