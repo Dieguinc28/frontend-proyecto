@@ -1,5 +1,8 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingRoot: path.join(__dirname, '../'),
   images: {
     remotePatterns: [
       {
@@ -12,7 +15,6 @@ const nextConfig = {
       },
     ],
   },
-  outputFileTracingRoot: require('path').join(__dirname, '../'),
 };
 
 module.exports = nextConfig;
