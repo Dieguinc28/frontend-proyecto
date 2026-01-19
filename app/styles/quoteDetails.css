@@ -1,0 +1,152 @@
+/* ============================================
+   QUOTE DETAILS STYLES
+   ============================================ */
+
+.quote-details-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.quote-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.quote-header h3 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.quote-date {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.quote-items {
+  margin-bottom: 1.5rem;
+}
+
+.quote-items h4 {
+  margin: 0 0 1rem 0;
+  color: #2c3e50;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.quote-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.quote-items-table thead {
+  background: #f8f9fa;
+}
+
+.quote-items-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.875rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.quote-items-table td {
+  padding: 0.75rem;
+  color: #4a5568;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.quote-items-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.quote-items-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.quote-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.quote-total .total-amount {
+  color: #2e86ab;
+  font-size: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .quote-details-card {
+    padding: 1rem;
+  }
+
+  .quote-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .quote-items-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .quote-items-table th,
+  .quote-items-table td {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .quote-total {
+    font-size: 1rem;
+  }
+
+  .quote-total .total-amount {
+    font-size: 1.25rem;
+  }
+}
