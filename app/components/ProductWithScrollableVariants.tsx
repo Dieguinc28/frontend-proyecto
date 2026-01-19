@@ -168,12 +168,11 @@ export default function ProductWithScrollableVariants({
                   const variantPrice = getProductPrice(variant);
                   const variantStock = variant.stock || 0;
                   const isSelected =
-                    selectedProduct._id === variant._id ||
-                    selectedProduct.id === variant.id;
+                    selectedProduct._id === variant._id;
 
                   return (
                     <div
-                      key={variant._id || variant.id}
+                      key={variant._id}
                       className={`variant-item ${isSelected ? 'selected' : ''} ${variantStock === 0 ? 'out-of-stock' : ''}`}
                       onClick={() =>
                         variantStock > 0 && handleSelectVariant(variant)
