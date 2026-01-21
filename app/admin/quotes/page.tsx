@@ -3,12 +3,17 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCurrentUser } from '../../hooks/useAuth';
-import { useAllQuotes, useUpdateQuoteStatus } from '../../hooks/useQuotes';
+import {
+  useAllQuotes,
+  useUpdateQuoteStatus,
+  useDownloadQuotePdf,
+} from '../../hooks/useQuotes';
 import AdminLayout from '../../components/AdminLayout';
 import QuoteDetailModal from '../../components/QuoteDetailModal';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import DownloadIcon from '@mui/icons-material/Download';
 import type { Quote } from '../../types';
 
 export default function AdminQuotes() {
@@ -16,6 +21,7 @@ export default function AdminQuotes() {
   const router = useRouter();
   const { data: quotes, isLoading } = useAllQuotes();
   const { mutate: updateStatus } = useUpdateQuoteStatus();
+  const { mutate: downloadPdf } = useDownloadQuotePdf();
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
 
@@ -32,7 +38,7 @@ export default function AdminQuotes() {
 
   const handleUpdateStatus = (
     quoteId: number,
-    status: 'aprobada' | 'rechazada'
+    status: 'aprobada' | 'rechazada',
   ) => {
     const message =
       status === 'aprobada'
@@ -49,7 +55,7 @@ export default function AdminQuotes() {
           onError: () => {
             alert('Error al actualizar estado');
           },
-        }
+        },
       );
     }
   };
@@ -146,6 +152,13 @@ export default function AdminQuotes() {
                             title="Ver detalles"
                           >
                             <VisibilityIcon />
+                          </button>
+                          <button
+                            className="btn-icon"
+                            onClick={() => downloadPdf(String(quote.id))}
+                            title="Descargar PDF"
+                          >
+                            <DownloadIcon />
                           </button>
                         </div>
                       </td>

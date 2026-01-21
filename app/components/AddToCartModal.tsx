@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react';
 import { getImageUrl } from '../lib/imageUtils';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
+import { useProducts } from '../hooks/useProducts';
 import CloseIcon from '@mui/icons-material/Close';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import '../styles/modal.css';
 
 interface AddToCartModalProps {
   isOpen: boolean;
@@ -17,14 +19,6 @@ interface AddToCartModalProps {
   product: Product | null;
 }
 
-// Colores disponibles para bolígrafos
-const BOLIGRAFO_COLORS = [
-  { name: 'Negro', hex: '#1a1a1a' },
-  { name: 'Azul', hex: '#2563eb' },
-  { name: 'Rojo', hex: '#dc2626' },
-  { name: 'Verde', hex: '#16a34a' },
-];
-
 export default function AddToCartModal({
   isOpen,
   onClose,
@@ -32,55 +26,65 @@ export default function AddToCartModal({
   product,
 }: AddToCartModalProps) {
   const { addToCart } = useCart();
-  const [alternativa, setAlternativa] = useState<Product | null>(null);
+  const { data: allProducts } = useProducts();
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
-  // Detectar si es un bolígrafo
-  const isBoligrafo =
-    product?.nombre?.toLowerCase().includes('bolígrafo') ||
-    product?.nombre?.toLowerCase().includes('boligrafo') ||
-    product?.name?.toLowerCase().includes('bolígrafo') ||
-    product?.name?.toLowerCase().includes('boligrafo');
+  // Función para obtener el nombre base del producto (sin color/variante)
+  const getBaseName = (name: string): string => {
+    return name
+      .replace(
+        /\b(azul|negro|rojo|verde|amarillo|blanco|rosa|morado|naranja)\b/gi,
+        '',
+      )
+      .replace(/\b(pequeño|mediano|grande|chico|ch|md|gde)\b/gi, '')
+      .replace(/\d+\s*(cm|mm|pulgadas|")/gi, '')
+      .trim()
+      .toLowerCase();
+  };
 
-  // Efecto para cargar UNA recomendación cuando se abre el modal
+  // Efecto para cargar productos relacionados cuando se abre el modal
   useEffect(() => {
-    if (isOpen && product) {
-      // Reset estados
+    if (isOpen && product && allProducts) {
       setQuantity(1);
-      setSelectedColor(isBoligrafo ? BOLIGRAFO_COLORS[0].name : null);
 
-      const id = (product as any).id || (product as any).idproducto;
-      const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+      const productName = product.name || product.nombre || '';
+      const baseName = getBaseName(productName);
+      const productId = product._id || String(product.idproducto);
+      const productBrand = (product.marca || '').toLowerCase();
 
-      fetch(`${API_URL}/recomendaciones/producto/${id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (Array.isArray(data) && data.length > 0) {
-            // Solo tomamos la primera alternativa
-            setAlternativa(data[0]);
-          } else {
-            setAlternativa(null);
-          }
-        })
-        .catch((err) => {
-          console.error('Error cargando recomendaciones:', err);
-          setAlternativa(null);
-        });
+      // Buscar productos similares (mismo nombre base y marca, pero diferente variante)
+      const related = allProducts.filter((p) => {
+        const pId = p._id || String(p.idproducto);
+        if (pId === productId) return false;
+
+        const pName = p.name || p.nombre || '';
+        const pBaseName = getBaseName(pName);
+        const pBrand = (p.marca || '').toLowerCase();
+
+        // Mismo nombre base y marca, pero nombre completo diferente
+        return (
+          pBaseName === baseName &&
+          pBrand === productBrand &&
+          pName.toLowerCase() !== productName.toLowerCase()
+        );
+      });
+
+      setRelatedProducts(related.slice(0, 3)); // Máximo 3 recomendaciones
     } else {
-      setAlternativa(null);
+      setRelatedProducts([]);
       setQuantity(1);
-      setSelectedColor(null);
     }
-  }, [isOpen, product, isBoligrafo]);
+  }, [isOpen, product, allProducts]);
 
   if (!isOpen || !product) return null;
 
   const price =
     typeof product.price === 'number'
       ? product.price
-      : parseFloat(product.price as any);
+      : typeof product.precioreferencial === 'number'
+        ? product.precioreferencial
+        : parseFloat(String(product.price || product.precioreferencial || 0));
 
   const maxStock = product.stock || 99;
 
@@ -92,18 +96,8 @@ export default function AddToCartModal({
     onConfirm(quantity);
   };
 
-  const handleAddAlternativa = () => {
-    if (alternativa) {
-      const formattedProduct: Product = {
-        ...alternativa,
-        _id: alternativa._id || String(alternativa.idproducto),
-        name: alternativa.nombre || alternativa.name || 'Producto',
-        price: alternativa.precioreferencial || alternativa.price || 0,
-        description: alternativa.descripcion || alternativa.description || '',
-      };
-      addToCart(formattedProduct, 1);
-      onClose();
-    }
+  const handleAddRelated = (relatedProduct: Product) => {
+    addToCart(relatedProduct, 1);
   };
 
   return (
@@ -111,7 +105,7 @@ export default function AddToCartModal({
       <div
         className="modal-content add-to-cart-modal"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: '450px' }}
+        style={{ maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto' }}
       >
         <button className="modal-close" onClick={onClose}>
           <CloseIcon />
@@ -133,68 +127,6 @@ export default function AddToCartModal({
             <p className="product-price">${price.toFixed(2)}</p>
           </div>
         </div>
-
-        {/* Selector de color para bolígrafos */}
-        {isBoligrafo && (
-          <div
-            style={{
-              marginTop: '15px',
-              padding: '12px',
-              background: '#f8fafc',
-              borderRadius: '8px',
-            }}
-          >
-            <p
-              style={{
-                fontSize: '0.85rem',
-                fontWeight: '600',
-                marginBottom: '10px',
-                color: '#374151',
-              }}
-            >
-              Selecciona el color:
-            </p>
-            <div
-              style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}
-            >
-              {BOLIGRAFO_COLORS.map((color) => (
-                <button
-                  key={color.name}
-                  onClick={() => setSelectedColor(color.name)}
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    backgroundColor: color.hex,
-                    border:
-                      selectedColor === color.name
-                        ? '3px solid #4f46e5'
-                        : '2px solid #e5e7eb',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    boxShadow:
-                      selectedColor === color.name
-                        ? '0 0 0 2px white, 0 0 0 4px #4f46e5'
-                        : 'none',
-                  }}
-                  title={color.name}
-                />
-              ))}
-            </div>
-            {selectedColor && (
-              <p
-                style={{
-                  fontSize: '0.75rem',
-                  color: '#6b7280',
-                  marginTop: '8px',
-                  textAlign: 'center',
-                }}
-              >
-                Color seleccionado: {selectedColor}
-              </p>
-            )}
-          </div>
-        )}
 
         {/* Selector de cantidad */}
         <div
@@ -280,73 +212,119 @@ export default function AddToCartModal({
           </p>
         </div>
 
-        {/* Alternativa única */}
-        {alternativa && (
+        {/* Productos relacionados (otras variantes) */}
+        {relatedProducts.length > 0 && (
           <div
             style={{
-              marginTop: '15px',
-              borderTop: '1px solid #eee',
+              marginTop: '20px',
+              borderTop: '2px solid #e5e7eb',
               paddingTop: '15px',
             }}
           >
             <p
               style={{
-                fontSize: '0.85rem',
-                color: '#666',
-                marginBottom: '10px',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                color: '#374151',
+                marginBottom: '12px',
               }}
             >
-              También te podría interesar:
+              🎨 También disponible en:
             </p>
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '10px',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                background: '#fafafa',
-              }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
             >
-              <img
-                src={getImageUrl(alternativa.image)}
-                alt={alternativa.nombre || alternativa.name}
-                style={{
-                  width: '50px',
-                  height: '50px',
-                  objectFit: 'contain',
-                  borderRadius: '4px',
-                }}
-              />
-              <div style={{ flex: 1 }}>
-                <p style={{ fontSize: '0.8rem', fontWeight: '600', margin: 0 }}>
-                  {alternativa.nombre || alternativa.name}
-                </p>
-                <p
-                  style={{
-                    fontSize: '0.85rem',
-                    color: '#2563eb',
-                    margin: '2px 0 0',
-                  }}
-                >
-                  ${alternativa.precioreferencial || alternativa.price}
-                </p>
-              </div>
-              <button
-                onClick={handleAddAlternativa}
-                style={{
-                  padding: '6px 12px',
-                  fontSize: '0.75rem',
-                  background: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                }}
-              >
-                Agregar
-              </button>
+              {relatedProducts.map((related) => {
+                const relatedPrice =
+                  typeof related.price === 'number'
+                    ? related.price
+                    : typeof related.precioreferencial === 'number'
+                      ? related.precioreferencial
+                      : parseFloat(
+                          String(
+                            related.price || related.precioreferencial || 0,
+                          ),
+                        );
+
+                return (
+                  <div
+                    key={related._id || related.idproducto}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '10px',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      background: '#fafafa',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#3b82f6';
+                      e.currentTarget.style.background = '#eff6ff';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#e5e7eb';
+                      e.currentTarget.style.background = '#fafafa';
+                    }}
+                  >
+                    <img
+                      src={getImageUrl(related.image)}
+                      alt={related.nombre || related.name}
+                      style={{
+                        width: '50px',
+                        height: '50px',
+                        objectFit: 'contain',
+                        borderRadius: '4px',
+                      }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <p
+                        style={{
+                          fontSize: '0.85rem',
+                          fontWeight: '600',
+                          margin: 0,
+                          color: '#1f2937',
+                        }}
+                      >
+                        {related.nombre || related.name}
+                      </p>
+                      <p
+                        style={{
+                          fontSize: '0.9rem',
+                          color: '#2563eb',
+                          margin: '2px 0 0',
+                          fontWeight: '600',
+                        }}
+                      >
+                        ${relatedPrice.toFixed(2)}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleAddRelated(related)}
+                      style={{
+                        padding: '8px 14px',
+                        fontSize: '0.8rem',
+                        background: '#10b981',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#059669';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#10b981';
+                      }}
+                    >
+                      + Agregar
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

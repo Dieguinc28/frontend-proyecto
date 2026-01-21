@@ -1,0 +1,356 @@
+/* Custom Fonts */
+
+@font-face {
+  font-family: 'Aksioma Condensed';
+  src: url('/fonts/Aksioma-Condensed.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aksioma Condensed';
+  src: url('/fonts/Aksioma-Condensed.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Aplicar la fuente a elementos específicos */
+.hero-title,
+.carousel-content h1,
+.carousel-content .hero-title,
+.home-cotizador-title,
+.home-cotizador-subtitle,
+.header-logo,
+.nav-link,
+.action-button,
+.catalog-button,
+.section-header h2,
+.section-subtitle {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente a sección de productos */
+.section-header h2,
+.section-subtitle {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente a todos los elementos del header */
+.simple-header,
+.header-container,
+.search-button,
+.user-name-header,
+.mobile-nav-link,
+.dropdown-item {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente a todos los elementos del header */
+.simple-header,
+.header-container,
+.search-button,
+.user-name-header,
+.mobile-nav-link,
+.dropdown-item,
+.account-button {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente al footer */
+.footer,
+.footer-content,
+.footer-section h3,
+.footer-section h4,
+.footer-link,
+.footer-bottom,
+.footer-bottom p {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente al footer */
+.footer,
+.footer-content,
+.footer-section h3,
+.footer-section h4,
+.footer-link,
+.footer-bottom,
+.footer-bottom p {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente a la página de productos */
+.products-page,
+.products-hero h1,
+.products-hero p,
+.products-toolbar,
+.search-input-products,
+.filter-toggle-btn,
+.sort-select,
+.filters-sidebar h3,
+.filters-sidebar h4,
+.filter-option span,
+.results-count,
+.items-per-page label,
+.items-select,
+.no-results h3,
+.no-results p,
+.pagination-btn,
+.pagination-number,
+.clear-filters-btn {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente a la página de productos */
+.products-page,
+.products-hero h1,
+.products-hero p,
+.products-toolbar,
+.search-input-products,
+.filter-toggle-btn,
+.sort-select,
+.filters-sidebar h3,
+.filters-sidebar h4,
+.filter-option span,
+.results-count,
+.items-per-page label,
+.items-select,
+.no-results h3,
+.no-results p,
+.pagination-btn,
+.pagination-number {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente a la página de listas */
+.lists-page,
+.lists-hero h1,
+.lists-hero p,
+.lists-header h1,
+.lists-header p,
+.tab-btn,
+.uploader-header h2,
+.uploader-subtitle,
+.upload-card h3,
+.upload-description,
+.upload-btn,
+.selected-file,
+.selected-file p,
+.how-it-works h3,
+.info-list li,
+.coming-soon h2,
+.coming-soon p,
+.processing-indicator p,
+.processing-indicator small,
+.error-alert,
+.stat-number,
+.stat-label,
+.confidence-item,
+.results-list h3,
+.search-term,
+.quantity-badge,
+.confidence-badge,
+.product-name,
+.product-brand,
+.product-description,
+.product-price,
+.product-stock,
+.similarity-badge,
+.not-found-message {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente a las páginas de autenticación */
+.auth-page,
+.auth-card h1,
+.auth-card p,
+.auth-form label,
+.auth-form input,
+.btn-submit,
+.error-message,
+.auth-divider span,
+.auth-footer p,
+.auth-footer .link,
+.back-button,
+.input-hint,
+.forgot-link {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente a la página del carrito */
+.cart-page,
+.cart-page h1,
+.cart-page h2,
+.cart-page h3,
+.cart-page h4,
+.cart-page h5,
+.cart-page p,
+.cart-page span,
+.cart-page button,
+.cart-page input,
+.cart-page label,
+.cart-page td,
+.cart-page th,
+.cart-page small,
+.cart-page .btn,
+.cart-page .cart-count,
+.cart-page .cart-item-details,
+.cart-page .cart-item-description,
+.cart-page .qty-display,
+.cart-page .item-price,
+.cart-page .item-subtotal,
+.cart-page .item-brand,
+.cart-page .alt-brand,
+.cart-page .alternative-price,
+.cart-page .price-badge,
+.cart-page .summary-info-label,
+.cart-page .summary-info-value,
+.cart-page .summary-row,
+.cart-page .summary-total,
+.cart-page .summary-note,
+.cart-page .no-alternatives {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente a la página de cotizaciones */
+.quotes-list,
+.quote-card,
+.quote-card h1,
+.quote-card h2,
+.quote-card h3,
+.quote-card h4,
+.quote-card p,
+.quote-card span,
+.quote-card strong,
+.quote-card button,
+.quote-header,
+.quote-header h3,
+.quote-items,
+.quote-item,
+.quote-item span,
+.quote-total,
+.quote-total strong,
+.quote-actions,
+.status,
+.btn-success,
+.btn-danger {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente a la página de cotizaciones */
+.quotes-list,
+.quote-card,
+.quote-card h1,
+.quote-card h2,
+.quote-card h3,
+.quote-card h4,
+.quote-card p,
+.quote-card span,
+.quote-card strong,
+.quote-header,
+.quote-item,
+.quote-total,
+.quote-actions,
+.status,
+.btn-success,
+.btn-danger {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}
+
+/* Aplicar fuente Aksioma a las tarjetas de productos */
+.product-card,
+.product-card h3,
+.product-card .product-title-aksioma,
+.product-card .price,
+.product-card .price-aksioma,
+.product-card .btn,
+.btn-square-aksioma,
+.product-brand,
+.product-card-content {
+  font-family:
+    'Aksioma Condensed',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
+}

@@ -88,31 +88,21 @@ export default function FloatingQuoteButton() {
           align-items: center;
           gap: 10px;
           padding: 14px 24px;
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          background: var(--primary);
           color: white;
           border: none;
-          border-radius: 50px;
+          border-radius: 3px;
+          font-family: 'Aksioma', sans-serif;
           font-size: 1rem;
           font-weight: 600;
           cursor: pointer;
-          box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+          box-shadow: 0 4px 20px rgba(46, 134, 171, 0.4);
           transition: all 0.3s ease;
-          animation: pulse 2s infinite;
         }
 
         .floating-quote-btn:hover {
-          transform: translateY(-2px) scale(1.02);
-          box-shadow: 0 6px 30px rgba(79, 70, 229, 0.5);
-        }
-
-        @keyframes pulse {
-          0%,
-          100% {
-            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
-          }
-          50% {
-            box-shadow: 0 4px 30px rgba(79, 70, 229, 0.6);
-          }
+          background: var(--primary-dark);
+          box-shadow: 0 6px 30px rgba(46, 134, 171, 0.5);
         }
 
         .floating-btn-text {
@@ -122,13 +112,13 @@ export default function FloatingQuoteButton() {
         .floating-btn-price {
           background: rgba(255, 255, 255, 0.2);
           padding: 4px 10px;
-          border-radius: 20px;
+          border-radius: 3px;
           font-size: 0.9rem;
         }
 
         .floating-quote-expanded {
           background: white;
-          border-radius: 16px;
+          border-radius: 3px;
           box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
           overflow: hidden;
           width: 280px;
@@ -151,8 +141,9 @@ export default function FloatingQuoteButton() {
           justify-content: space-between;
           align-items: center;
           padding: 14px 16px;
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          background: var(--primary);
           color: white;
+          font-family: 'Aksioma', sans-serif;
           font-weight: 600;
         }
 

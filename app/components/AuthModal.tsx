@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLogin, useRegister } from '../hooks/useAuth';
 import SuccessModal from './SuccessModal';
 import PersonIcon from '@mui/icons-material/Person';
@@ -38,6 +38,19 @@ export default function AuthModal({
 
   const loginMutation = useLogin();
   const registerMutation = useRegister();
+
+  // Bloquear scroll cuando el modal está abierto
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   if (!isOpen && !showSuccess) return null;
 

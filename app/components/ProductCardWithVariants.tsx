@@ -30,7 +30,7 @@ const COLOR_MAP: Record<string, string> = {
 // Extraer color del nombre del producto
 const extractColor = (name: string): string | null => {
   const match = name.match(
-    /(azul|rojo|negro|verde|amarillo|rosa|morado|naranja|blanco|gris)s?$/i
+    /(azul|rojo|negro|verde|amarillo|rosa|morado|naranja|blanco|gris)s?$/i,
   );
   return match ? match[1].toLowerCase() : null;
 };
@@ -51,12 +51,12 @@ export default function ProductCardWithVariants({
     typeof selectedVariant.price === 'number'
       ? selectedVariant.price
       : typeof selectedVariant.precioreferencial === 'number'
-      ? selectedVariant.precioreferencial
-      : parseFloat(
-          String(
-            selectedVariant.price || selectedVariant.precioreferencial || 0
-          )
-        );
+        ? selectedVariant.precioreferencial
+        : parseFloat(
+            String(
+              selectedVariant.price || selectedVariant.precioreferencial || 0,
+            ),
+          );
 
   const stock = selectedVariant.stock || 0;
   const totalStock = variants.reduce((sum, v) => sum + (v.stock || 0), 0);
@@ -95,7 +95,7 @@ export default function ProductCardWithVariants({
     .filter((c) => c.color);
 
   const selectedColor = extractColor(
-    selectedVariant.name || selectedVariant.nombre || ''
+    selectedVariant.name || selectedVariant.nombre || '',
   );
 
   return (
@@ -153,40 +153,9 @@ export default function ProductCardWithVariants({
                   }}
                   title={`${colorName} (${variantStock} disponibles)`}
                 />
-              )
+              ),
             )}
           </div>
-        </div>
-
-        {/* Stock del color seleccionado */}
-        <div style={{ marginBottom: '12px' }}>
-          {stock > 0 ? (
-            <span
-              style={{
-                color: '#15803d',
-                backgroundColor: '#dcfce7',
-                padding: '4px 8px',
-                borderRadius: '15px',
-                fontSize: '0.85rem',
-                fontWeight: 'bold',
-              }}
-            >
-              En Stock: {stock}
-            </span>
-          ) : (
-            <span
-              style={{
-                color: '#b91c1c',
-                backgroundColor: '#fee2e2',
-                padding: '4px 8px',
-                borderRadius: '15px',
-                fontSize: '0.85rem',
-                fontWeight: 'bold',
-              }}
-            >
-              Agotado
-            </span>
-          )}
         </div>
 
         {/* Selector de cantidad */}

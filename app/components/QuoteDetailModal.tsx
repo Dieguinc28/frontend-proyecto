@@ -1,6 +1,7 @@
 'use client';
 
 import CloseIcon from '@mui/icons-material/Close';
+import { useDownloadQuotePdf } from '../hooks/useQuotes';
 import type { Quote } from '../types';
 
 interface QuoteDetailModalProps {
@@ -14,7 +15,13 @@ export default function QuoteDetailModal({
   onClose,
   quote,
 }: QuoteDetailModalProps) {
+  const { mutate: downloadPdf, isPending } = useDownloadQuotePdf();
+
   if (!isOpen || !quote) return null;
+
+  const handleDownload = () => {
+    downloadPdf(String(quote.id));
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -208,6 +215,14 @@ export default function QuoteDetailModal({
         </div>
 
         <div className="modal-footer">
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={handleDownload}
+            disabled={isPending}
+          >
+            {isPending ? 'Descargando...' : 'Descargar PDF'}
+          </button>
           <button type="button" className="btn-secondary" onClick={onClose}>
             Cerrar
           </button>

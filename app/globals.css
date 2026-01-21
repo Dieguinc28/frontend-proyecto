@@ -1,9 +1,12 @@
 /* Import all styles */
+@import './styles/fonts.css';
 @import './styles/variables.css';
 @import './styles/animations.css';
 @import './styles/components.css';
 @import './styles/layout.css';
 @import './styles/pages.css';
+@import './styles/cotizador.css';
+@import './styles/cotizador.css';
 
 /* Reset and Base Styles */
 *,

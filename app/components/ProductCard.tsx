@@ -50,56 +50,27 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
         <div className="product-card-content">
-          <h3>{name}</h3>
+          <h3 className="product-title-aksioma">{name}</h3>
           {product.marca && (
             <span className="product-brand">{product.marca}</span>
           )}
           <p className="description">{description}</p>
-          <p className="price">${price.toFixed(2)}</p>
-
-          {/* --- CÓDIGO NUEVO: ETIQUETA DE STOCK --- */}
-          <div style={{ marginBottom: '12px', marginTop: '5px' }}>
-            {stock > 0 ? (
-              <span
-                style={{
-                  color: '#15803d', // Verde oscuro
-                  backgroundColor: '#dcfce7', // Verde claro fondo
-                  padding: '4px 8px',
-                  borderRadius: '15px',
-                  fontSize: '0.85rem',
-                  fontWeight: 'bold',
-                }}
-              >
-                En Stock: {stock}
-              </span>
-            ) : (
-              <span
-                style={{
-                  color: '#b91c1c', // Rojo oscuro
-                  backgroundColor: '#fee2e2', // Rojo claro fondo
-                  padding: '4px 8px',
-                  borderRadius: '15px',
-                  fontSize: '0.85rem',
-                  fontWeight: 'bold',
-                }}
-              >
-                Agotado
-              </span>
-            )}
-          </div>
-          {/* --------------------------------------- */}
+          <p className="price price-aksioma">${price.toFixed(2)}</p>
 
           {stock > 0 ? (
-            <button onClick={handleAddToCart} className="btn btn-primary">
-              Agregar al Carrito
+            <button
+              onClick={handleAddToCart}
+              className="btn btn-primary btn-square-aksioma"
+            >
+              AGREGAR AL CARRITO
             </button>
           ) : (
             <button
-              className="btn btn-secondary"
+              className="btn btn-secondary btn-square-aksioma"
               disabled
               style={{ opacity: 0.6, cursor: 'not-allowed' }}
             >
-              Sin Stock
+              SIN STOCK
             </button>
           )}
         </div>

@@ -50,7 +50,7 @@ export default function CartSummary({
       </div>
 
       <div className="summary-note">
-        <small>* El precio final será confirmado por el proveedor</small>
+        <small>* El precio final será confirmado por el administrador</small>
       </div>
 
       <button

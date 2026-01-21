@@ -61,12 +61,6 @@ export default function AdminDashboard() {
       color: 'orange',
     },
     {
-      icon: <TrendingUpIcon />,
-      label: 'Ventas',
-      value: ventas?.length || 0,
-      color: 'red',
-    },
-    {
       icon: <PeopleIcon />,
       label: 'Pendientes',
       value: quotes?.filter((q) => q.status === 'pendiente').length || 0,

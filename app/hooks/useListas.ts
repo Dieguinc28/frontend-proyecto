@@ -13,7 +13,7 @@ export interface Lista {
     idestado: number;
     nombre: string;
   };
-  Itemlistas?: ItemLista[];
+  Itemlista?: ItemLista[]; // Cambiado de Itemlistas a Itemlista
 }
 
 export interface ItemLista {
@@ -56,7 +56,7 @@ export function useListas() {
     setError(null);
     try {
       const response = await apiClient.get<Lista[]>(
-        `/listas/usuario/${idusuario}`
+        `/listas/usuario/${idusuario}`,
       );
       return response.data;
     } catch (err: any) {
@@ -72,10 +72,14 @@ export function useListas() {
     setLoading(true);
     setError(null);
     try {
+      console.log('Obteniendo lista:', idlista);
       const response = await apiClient.get<Lista>(`/listas/${idlista}`);
+      console.log('Lista obtenida:', response.data);
+      console.log('Items en la lista:', response.data.Itemlista);
       return response.data;
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || 'Error al obtener lista';
+      console.error('Error en getListaById:', errorMsg, err);
       setError(errorMsg);
       throw new Error(errorMsg);
     } finally {
@@ -100,7 +104,7 @@ export function useListas() {
 
   const updateLista = async (
     idlista: number,
-    data: Partial<CreateListaData>
+    data: Partial<CreateListaData>,
   ): Promise<Lista> => {
     setLoading(true);
     setError(null);
@@ -131,15 +135,18 @@ export function useListas() {
   };
 
   const addItemToLista = async (
-    data: CreateItemListaData
+    data: CreateItemListaData,
   ): Promise<ItemLista> => {
     setLoading(true);
     setError(null);
     try {
+      console.log('Enviando item al backend:', data);
       const response = await apiClient.post<ItemLista>('/items', data);
+      console.log('Respuesta del backend:', response.data);
       return response.data;
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || 'Error al agregar item';
+      console.error('Error en addItemToLista:', errorMsg, err);
       setError(errorMsg);
       throw new Error(errorMsg);
     } finally {
@@ -149,7 +156,7 @@ export function useListas() {
 
   const updateItemLista = async (
     iditem: number,
-    data: Partial<CreateItemListaData>
+    data: Partial<CreateItemListaData>,
   ): Promise<ItemLista> => {
     setLoading(true);
     setError(null);
@@ -184,7 +191,7 @@ export function useListas() {
     setError(null);
     try {
       const response = await apiClient.get<ItemLista[]>(
-        `/items/lista/${idlista}`
+        `/items/lista/${idlista}`,
       );
       return response.data;
     } catch (err: any) {

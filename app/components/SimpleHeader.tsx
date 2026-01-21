@@ -12,11 +12,9 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SettingsIcon from '@mui/icons-material/Settings';
-import AuthModal from './AuthModal';
 import CartSidebar from './CartSidebar';
 import { useCart } from '../context/CartContext';
 import '../styles/header.css';
-import '../styles/modal.css';
 
 interface HeaderProps {
   items: Array<{ label: string; href: string }>;
@@ -32,18 +30,10 @@ export default function SimpleHeader({
   onLogout,
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const { cart } = useCart();
   const accountMenuRef = useRef<HTMLDivElement>(null);
-
-  const openModal = (mode: 'login' | 'register') => {
-    setAuthMode(mode);
-    setAuthModalOpen(true);
-    setAccountMenuOpen(false);
-  };
 
   const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -68,12 +58,12 @@ export default function SimpleHeader({
         <div className="header-container">
           <Link href="/" className="header-logo">
             <Image
-              src="/logo.svg"
+              src="/logo-text.svg"
               alt="Papelería Lady Laura"
-              width={40}
-              height={40}
+              width={240}
+              height={50}
+              priority
             />
-            <span className="logo-text">PAPELERÍA LADY LAURA</span>
           </Link>
 
           <div className="header-center desktop-nav">
@@ -81,21 +71,20 @@ export default function SimpleHeader({
               Inicio
             </Link>
             <Link href="/products" className="nav-link">
-              <MenuBookIcon fontSize="small" />
               Productos
             </Link>
-            <Link href="/lists" className="nav-link-highlight">
+            <Link href="/lists" className="nav-link cotizador-btn">
               Cotizador
             </Link>
           </div>
 
           <div className="header-actions desktop-nav">
             <button
-              className="action-button cart-button"
+              className="action-button cart-button cart-icon-only"
               onClick={() => setCartOpen(true)}
+              aria-label="Carrito de compras"
             >
-              <ShoppingCartIcon fontSize="small" />
-              Carrito
+              <ShoppingCartIcon fontSize="medium" />
               {cartItemsCount > 0 && (
                 <span className="cart-badge">{cartItemsCount}</span>
               )}
@@ -135,14 +124,6 @@ export default function SimpleHeader({
                         Mis Cotizaciones
                       </Link>
                       <Link
-                        href="/mis-listas"
-                        className="dropdown-item"
-                        onClick={() => setAccountMenuOpen(false)}
-                      >
-                        <MenuBookIcon fontSize="small" />
-                        Mis Listas
-                      </Link>
-                      <Link
                         href="/settings"
                         className="dropdown-item"
                         onClick={() => setAccountMenuOpen(false)}
@@ -164,20 +145,22 @@ export default function SimpleHeader({
                     </>
                   ) : (
                     <>
-                      <button
+                      <Link
+                        href="/login"
                         className="dropdown-item"
-                        onClick={() => openModal('login')}
+                        onClick={() => setAccountMenuOpen(false)}
                       >
                         <LoginIcon fontSize="small" />
                         Iniciar Sesión
-                      </button>
-                      <button
+                      </Link>
+                      <Link
+                        href="/register"
                         className="dropdown-item"
-                        onClick={() => openModal('register')}
+                        onClick={() => setAccountMenuOpen(false)}
                       >
                         <PersonAddIcon fontSize="small" />
                         Registrarse
-                      </button>
+                      </Link>
                     </>
                   )}
                 </div>
@@ -213,12 +196,11 @@ export default function SimpleHeader({
             className="mobile-nav-link"
             onClick={() => setMobileMenuOpen(false)}
           >
-            <MenuBookIcon fontSize="small" />
             Productos
           </Link>
           <Link
             href="/lists"
-            className="mobile-nav-link-highlight"
+            className="mobile-nav-link cotizador-btn-mobile"
             onClick={() => setMobileMenuOpen(false)}
           >
             Cotizador
@@ -264,14 +246,6 @@ export default function SimpleHeader({
                 Mis Cotizaciones
               </Link>
               <Link
-                href="/mis-listas"
-                className="mobile-nav-link"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <MenuBookIcon fontSize="small" />
-                Mis Listas
-              </Link>
-              <Link
                 href="/settings"
                 className="mobile-nav-link"
                 onClick={() => setMobileMenuOpen(false)}
@@ -292,36 +266,26 @@ export default function SimpleHeader({
             </>
           ) : (
             <>
-              <button
+              <Link
+                href="/login"
                 className="mobile-nav-link"
-                onClick={() => {
-                  openModal('login');
-                  setMobileMenuOpen(false);
-                }}
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <LoginIcon fontSize="small" />
                 Iniciar Sesión
-              </button>
-              <button
+              </Link>
+              <Link
+                href="/register"
                 className="mobile-nav-link"
-                onClick={() => {
-                  openModal('register');
-                  setMobileMenuOpen(false);
-                }}
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <PersonAddIcon fontSize="small" />
                 Registrarse
-              </button>
+              </Link>
             </>
           )}
         </div>
       )}
-
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        initialMode={authMode}
-      />
 
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </header>

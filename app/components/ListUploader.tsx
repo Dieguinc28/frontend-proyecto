@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ImageIcon from '@mui/icons-material/Image';
@@ -65,22 +65,35 @@ export default function ListUploader() {
   const [selectedProducts, setSelectedProducts] = useState<
     Map<string, { product: Product; quantity: number }>
   >(new Map());
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(),
+  );
 
   // --- ESTADO DEL FILTRO ---
-  const [filterMode, setFilterMode] = useState<'all' | 'found' | 'not_found'>('all');
+  const [filterMode, setFilterMode] = useState<'all' | 'found' | 'not_found'>(
+    'all',
+  );
 
-  const handleFileSelect = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    type: 'pdf' | 'image'
-  ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      setUploadType(type);
-      setError(null);
-      setResults(null);
+  const toggleCategory = (categoria: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoria)) {
+      newExpanded.delete(categoria);
+    } else {
+      newExpanded.add(categoria);
     }
+    setExpandedCategories(newExpanded);
   };
+
+  // --- LÓGICA DE FILTRADO (MEMOIZADA) ---
+  const filteredResults = useMemo(() => {
+    return (
+      results?.results.filter((r) => {
+        if (filterMode === 'found') return r.found;
+        if (filterMode === 'not_found') return !r.found;
+        return true; // 'all'
+      }) || []
+    );
+  }, [results, filterMode]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -111,9 +124,22 @@ export default function ListUploader() {
         setError(
           `Por favor selecciona un archivo ${
             type === 'pdf' ? 'PDF' : 'de imagen'
-          } válido`
+          } válido`,
         );
       }
+    }
+  };
+
+  const handleFileSelect = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: 'pdf' | 'image',
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setUploadType(type);
+      setError(null);
+      setResults(null);
     }
   };
 
@@ -141,7 +167,7 @@ export default function ListUploader() {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-        }
+        },
       );
 
       setResults(data);
@@ -168,7 +194,7 @@ export default function ListUploader() {
       console.error('Error procesando archivo:', err);
       setError(
         err.response?.data?.message ||
-          `Error al procesar el ${uploadType === 'pdf' ? 'PDF' : 'imagen'}`
+          `Error al procesar el ${uploadType === 'pdf' ? 'PDF' : 'imagen'}`,
       );
     } finally {
       setIsProcessing(false);
@@ -224,7 +250,7 @@ export default function ListUploader() {
           category: product.category || '',
           createdAt: '',
         },
-        totalQuantity
+        totalQuantity,
       );
     }
 
@@ -236,21 +262,50 @@ export default function ListUploader() {
   };
 
   const getConfidenceBadge = (confidence: string) => {
-    const badges = {
-      high: { text: 'Alta confianza', color: '#10b981', icon: '✓' },
-      medium: { text: 'Media confianza', color: '#f59e0b', icon: '~' },
-      low: { text: 'Baja confianza', color: '#ef4444', icon: '?' },
-      none: { text: 'No encontrado', color: '#6b7280', icon: '✗' },
-    };
-    return badges[confidence as keyof typeof badges] || badges.none;
+    // No mostrar badges de confianza
+    return { text: '', color: 'transparent', icon: '' };
   };
 
-  // --- LÓGICA DE FILTRADO ---
-  const filteredResults = results?.results.filter(r => {
-      if (filterMode === 'found') return r.found;
-      if (filterMode === 'not_found') return !r.found;
-      return true; // 'all'
-  }) || [];
+  // --- AGRUPAR RESULTADOS POR NOMBRE DE PRODUCTO ---
+  // Función para normalizar palabras (quitar plurales, etc)
+  const normalizarPalabra = (palabra: string): string => {
+    palabra = palabra.toLowerCase().trim();
+    // Quitar 's' final para manejar plurales (carpetas -> carpeta)
+    if (palabra.endsWith('s') && palabra.length > 3) {
+      return palabra.slice(0, -1);
+    }
+    return palabra;
+  };
+
+  const groupedResults = useMemo(() => {
+    const grupos = filteredResults.reduce(
+      (grupos, result) => {
+        if (!result.found || result.products.length === 0) {
+          // Los no encontrados van a una categoría especial
+          if (!grupos['No encontrados']) {
+            grupos['No encontrados'] = [];
+          }
+          grupos['No encontrados'].push(result);
+          return grupos;
+        }
+
+        // Normalizar el nombre del producto para agrupar similares
+        // Usar solo la primera palabra normalizada
+        const nombreCompleto = result.searchTerm.toLowerCase().trim();
+        const palabras = nombreCompleto.split(' ');
+        const palabraClave = normalizarPalabra(palabras[0]); // Primera palabra normalizada
+
+        if (!grupos[palabraClave]) {
+          grupos[palabraClave] = [];
+        }
+        grupos[palabraClave].push(result);
+        return grupos;
+      },
+      {} as Record<string, SearchResult[]>,
+    );
+
+    return grupos;
+  }, [filteredResults]);
 
   return (
     <div className="list-uploader">
@@ -393,177 +448,487 @@ export default function ListUploader() {
           </div>
 
           {/* --- BOTONES DE FILTRO --- */}
-          <div className="confidence-breakdown" style={{display: 'block', textAlign: 'left', padding: '10px 0'}}>
-             <div style={{display: 'flex', gap: '15px', flexWrap: 'wrap'}}>
-                
-                {/* Botón Ver Encontrados */}
-                <button 
-                    onClick={() => setFilterMode('found')}
-                    style={{
-                        padding: '10px 20px',
-                        borderRadius: '8px',
-                        border: filterMode === 'found' ? '2px solid #10b981' : '1px solid #ddd',
-                        background: filterMode === 'found' ? '#ecfdf5' : 'white',
-                        color: filterMode === 'found' ? '#065f46' : '#666',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        transition: 'all 0.2s'
-                    }}
-                >
-                    <VisibilityIcon fontSize="small" />
-                    Ver Encontrados ({results.stats.found})
-                </button>
+          <div
+            className="confidence-breakdown"
+            style={{ display: 'block', textAlign: 'left', padding: '10px 0' }}
+          >
+            <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+              {/* Botón Ver Encontrados */}
+              <button
+                onClick={() => setFilterMode('found')}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '3px',
+                  border:
+                    filterMode === 'found'
+                      ? '2px solid #10b981'
+                      : '1px solid #ddd',
+                  background: filterMode === 'found' ? '#ecfdf5' : 'white',
+                  color: filterMode === 'found' ? '#065f46' : '#666',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <VisibilityIcon fontSize="small" />
+                Ver Encontrados ({results.stats.found})
+              </button>
 
-                {/* Botón Ver No Encontrados */}
-                <button 
-                    onClick={() => setFilterMode('not_found')}
-                    style={{
-                        padding: '10px 20px',
-                        borderRadius: '8px',
-                        border: filterMode === 'not_found' ? '2px solid #ef4444' : '1px solid #ddd',
-                        background: filterMode === 'not_found' ? '#fef2f2' : 'white',
-                        color: filterMode === 'not_found' ? '#991b1b' : '#666',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        transition: 'all 0.2s'
-                    }}
-                >
-                    <VisibilityOffIcon fontSize="small" />
-                    Ver No Encontrados ({results.stats.notFound})
-                </button>
+              {/* Botón Ver No Encontrados */}
+              <button
+                onClick={() => setFilterMode('not_found')}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '3px',
+                  border:
+                    filterMode === 'not_found'
+                      ? '2px solid #ef4444'
+                      : '1px solid #ddd',
+                  background: filterMode === 'not_found' ? '#fef2f2' : 'white',
+                  color: filterMode === 'not_found' ? '#991b1b' : '#666',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <VisibilityOffIcon fontSize="small" />
+                Ver No Encontrados ({results.stats.notFound})
+              </button>
 
-                 {/* Botón Ver Todos */}
-                 <button 
-                    onClick={() => setFilterMode('all')}
-                    style={{
-                        padding: '10px',
-                        borderRadius: '8px',
-                        border: filterMode === 'all' ? '2px solid #3b82f6' : '1px solid #ddd',
-                        background: filterMode === 'all' ? '#eff6ff' : 'white',
-                        color: filterMode === 'all' ? '#1e40af' : '#666',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}
-                    title="Ver Todos"
-                >
-                    <RefreshIcon fontSize="small" />
-                </button>
-             </div>
+              {/* Botón Ver Todos */}
+              <button
+                onClick={() => setFilterMode('all')}
+                style={{
+                  padding: '10px',
+                  borderRadius: '3px',
+                  border:
+                    filterMode === 'all'
+                      ? '2px solid #3b82f6'
+                      : '1px solid #ddd',
+                  background: filterMode === 'all' ? '#eff6ff' : 'white',
+                  color: filterMode === 'all' ? '#1e40af' : '#666',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                title="Ver Todos"
+              >
+                <RefreshIcon fontSize="small" />
+              </button>
+            </div>
           </div>
 
           {/* Products List */}
           <div className="results-list">
             <h3>Productos Detectados ({filteredResults.length})</h3>
-            
+
             {filteredResults.length === 0 ? (
-                <div style={{padding: '30px', textAlign: 'center', color: '#666', background: '#f9fafb', borderRadius: '8px'}}>
-                    {filterMode === 'found' ? 'No se encontraron productos exitosos.' : '¡Genial! No hay productos faltantes.'}
-                </div>
+              <div
+                style={{
+                  padding: '30px',
+                  textAlign: 'center',
+                  color: '#666',
+                  background: '#f9fafb',
+                  borderRadius: '8px',
+                }}
+              >
+                {filterMode === 'found'
+                  ? 'No se encontraron productos exitosos.'
+                  : '¡Genial! No hay productos faltantes.'}
+              </div>
             ) : (
-                filteredResults.map((result, index) => {
-                const badge = getConfidenceBadge(result.confidence);
-                return (
-                    <div key={index} className="result-item">
-                    <div className="result-header">
-                        <div className="result-search-term">
-                        {result.quantity > 1 && (
-                            <span className="quantity-badge">
-                            {result.quantity}x
-                            </span>
-                        )}
-                        <span className="search-term">{result.searchTerm}</span>
-                        </div>
-                        <span
-                        className="confidence-badge"
-                        style={{ backgroundColor: badge.color }}
-                        >
-                        {badge.icon} {badge.text}
-                        </span>
-                    </div>
+              Object.entries(groupedResults).map(
+                ([nombreGrupo, resultados]) => {
+                  const isExpanded = expandedCategories.has(nombreGrupo);
+                  const primerResultado = resultados[0];
+                  const resultadosRestantes = resultados.slice(1);
+                  const totalResultados = resultados.length;
 
-                    {result.found && result.products.length > 0 && (
-                        <div className="result-products">
-                        {result.products.map((product) => {
-                            const isSelected = selectedProducts.has(product.id);
-                            return (
-                            <div
-                                key={product.id}
-                                className={`product-match ${
-                                isSelected ? 'selected' : ''
-                                }`}
-                                onClick={() =>
-                                toggleProductSelection(product.id, result)
-                                }
-                                style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
-                            >
-                                {/* 1. IMAGEN */}
-                                <img
-                                src={getImageUrl(product.image)}
-                                alt={product.name}
-                                className="product-thumb"
-                                />
+                  // Usar el searchTerm del primer resultado como título del grupo
+                  const tituloGrupo =
+                    nombreGrupo === 'No encontrados'
+                      ? 'No encontrados'
+                      : primerResultado.searchTerm;
 
-                                {/* 2. DETALLES (FLEX 1 PARA OCUPAR ESPACIO) */}
-                                <div className="product-details" style={{ flex: 1 }}>
+                  return (
+                    <div
+                      key={nombreGrupo}
+                      className="categoria-grupo-cotizador"
+                    >
+                      <div className="categoria-header-cotizador">
+                        <h4 className="categoria-titulo-cotizador">
+                          {tituloGrupo}
+                        </h4>
+                      </div>
+
+                      {/* Primer resultado siempre visible */}
+                      {(() => {
+                        const result = primerResultado;
+                        const badge = getConfidenceBadge(result.confidence);
+                        const primerProducto = result.products[0];
+                        const productosRestantes = result.products.slice(1);
+                        const tieneVariantes = productosRestantes.length > 0;
+
+                        return (
+                          <div className="result-item">
+                            <div className="result-header">
+                              <div className="result-search-term">
+                                {result.quantity > 1 && (
+                                  <span className="quantity-badge">
+                                    {result.quantity}x
+                                  </span>
+                                )}
+                                <span className="search-term">
+                                  {result.searchTerm}
+                                </span>
+                              </div>
+                              {/* Confidence badge oculto
+                              <span
+                                className="confidence-badge"
+                                style={{ backgroundColor: badge.color }}
+                              >
+                                {badge.icon} {badge.text}
+                              </span>
+                              */}
+                            </div>
+
+                            {result.found && primerProducto && (
+                              <div className="result-products">
+                                {/* Primer producto siempre visible */}
+                                <div
+                                  key={primerProducto.id}
+                                  className={`product-match ${
+                                    selectedProducts.has(primerProducto.id)
+                                      ? 'selected'
+                                      : ''
+                                  }`}
+                                  onClick={() =>
+                                    toggleProductSelection(
+                                      primerProducto.id,
+                                      result,
+                                    )
+                                  }
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  <img
+                                    src={getImageUrl(primerProducto.image)}
+                                    alt={primerProducto.name}
+                                    className="product-thumb"
+                                  />
+                                  <div
+                                    className="product-details"
+                                    style={{ flex: 1 }}
+                                  >
                                     <div className="product-name">
-                                        {product.name}
-                                        {product.marca && (
+                                      {primerProducto.name}
+                                      {primerProducto.marca && (
                                         <span className="product-brand">
-                                            {product.marca}
+                                          {primerProducto.marca}
                                         </span>
-                                        )}
+                                      )}
                                     </div>
-                                    {product.description && (
-                                        <div className="product-description">
-                                        {product.description}
-                                        </div>
+                                    {primerProducto.description && (
+                                      <div className="product-description">
+                                        {primerProducto.description}
+                                      </div>
                                     )}
                                     <div className="product-meta">
-                                        <span className="product-price">
-                                        ${product.price.toFixed(2)}
-                                        </span>
-                                        <span className="product-stock">
-                                        Stock: {product.stock}
-                                        </span>
-                                        {product.similarity && (
+                                      <span className="product-price">
+                                        ${primerProducto.price.toFixed(2)}
+                                      </span>
+                                      <span className="product-stock">
+                                        Stock: {primerProducto.stock}
+                                      </span>
+                                      {primerProducto.similarity && (
                                         <span className="similarity-badge">
-                                            {product.similarity}% similar
+                                          {primerProducto.similarity}% similar
                                         </span>
-                                        )}
+                                      )}
                                     </div>
+                                  </div>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedProducts.has(
+                                      primerProducto.id,
+                                    )}
+                                    onChange={() => {}}
+                                    className="product-checkbox"
+                                    style={{
+                                      marginLeft: '10px',
+                                      width: '20px',
+                                      height: '20px',
+                                      cursor: 'pointer',
+                                    }}
+                                  />
                                 </div>
 
-                                {/* 3. CHECKBOX AL FINAL (DERECHA) */}
-                                <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => {}}
-                                className="product-checkbox"
-                                style={{ marginLeft: '10px', width: '20px', height: '20px', cursor: 'pointer' }}
-                                />
-                            </div>
-                            );
-                        })}
-                        </div>
-                    )}
+                                {/* Botón para ver otros productos parecidos */}
+                                {tieneVariantes && (
+                                  <button
+                                    onClick={() => toggleCategory(nombreGrupo)}
+                                    style={{
+                                      width: '100%',
+                                      padding: '10px',
+                                      marginTop: '10px',
+                                      background: '#f3f4f6',
+                                      border: '1px solid #e5e7eb',
+                                      borderRadius: '6px',
+                                      color: '#374151',
+                                      cursor: 'pointer',
+                                      fontSize: '14px',
+                                      fontWeight: '500',
+                                      transition: 'all 0.2s',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.background =
+                                        '#e5e7eb';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.background =
+                                        '#f3f4f6';
+                                    }}
+                                  >
+                                    {isExpanded ? '▲ Ocultar' : '▼ Ver'}{' '}
+                                    {productosRestantes.length} producto
+                                    {productosRestantes.length > 1
+                                      ? 's'
+                                      : ''}{' '}
+                                    parecido
+                                    {productosRestantes.length > 1 ? 's' : ''}
+                                  </button>
+                                )}
 
-                    {!result.found && (
-                        <div className="not-found-message">
-                        <ErrorIcon sx={{ fontSize: 18, mr: 1 }} />
-                        No se encontraron productos similares en el catálogo
+                                {/* Productos restantes (expandibles) */}
+                                {isExpanded &&
+                                  productosRestantes.length > 0 && (
+                                    <div style={{ marginTop: '10px' }}>
+                                      {productosRestantes.map((product) => {
+                                        const isSelected = selectedProducts.has(
+                                          product.id,
+                                        );
+                                        return (
+                                          <div
+                                            key={product.id}
+                                            className={`product-match ${
+                                              isSelected ? 'selected' : ''
+                                            }`}
+                                            onClick={() =>
+                                              toggleProductSelection(
+                                                product.id,
+                                                result,
+                                              )
+                                            }
+                                            style={{
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              cursor: 'pointer',
+                                              marginTop: '8px',
+                                            }}
+                                          >
+                                            <img
+                                              src={getImageUrl(product.image)}
+                                              alt={product.name}
+                                              className="product-thumb"
+                                            />
+                                            <div
+                                              className="product-details"
+                                              style={{ flex: 1 }}
+                                            >
+                                              <div className="product-name">
+                                                {product.name}
+                                                {product.marca && (
+                                                  <span className="product-brand">
+                                                    {product.marca}
+                                                  </span>
+                                                )}
+                                              </div>
+                                              {product.description && (
+                                                <div className="product-description">
+                                                  {product.description}
+                                                </div>
+                                              )}
+                                              <div className="product-meta">
+                                                <span className="product-price">
+                                                  ${product.price.toFixed(2)}
+                                                </span>
+                                                <span className="product-stock">
+                                                  Stock: {product.stock}
+                                                </span>
+                                                {product.similarity && (
+                                                  <span className="similarity-badge">
+                                                    {product.similarity}%
+                                                    similar
+                                                  </span>
+                                                )}
+                                              </div>
+                                            </div>
+                                            <input
+                                              type="checkbox"
+                                              checked={isSelected}
+                                              onChange={() => {}}
+                                              className="product-checkbox"
+                                              style={{
+                                                marginLeft: '10px',
+                                                width: '20px',
+                                                height: '20px',
+                                                cursor: 'pointer',
+                                              }}
+                                            />
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                              </div>
+                            )}
+
+                            {!result.found && (
+                              <div className="not-found-message">
+                                <ErrorIcon sx={{ fontSize: 18, mr: 1 }} />
+                                No se encontraron productos similares en el
+                                catálogo
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+
+                      {/* Resultados restantes (expandibles) */}
+                      {isExpanded && resultadosRestantes.length > 0 && (
+                        <div className="resultados-expandidos">
+                          {resultadosRestantes.map((result, index) => {
+                            const badge = getConfidenceBadge(result.confidence);
+                            return (
+                              <div
+                                key={index}
+                                className="result-item result-item-secundario"
+                              >
+                                <div className="result-header">
+                                  <div className="result-search-term">
+                                    {result.quantity > 1 && (
+                                      <span className="quantity-badge">
+                                        {result.quantity}x
+                                      </span>
+                                    )}
+                                    <span className="search-term">
+                                      {result.searchTerm}
+                                    </span>
+                                  </div>
+                                  {/* Confidence badge oculto
+                                  <span
+                                    className="confidence-badge"
+                                    style={{ backgroundColor: badge.color }}
+                                  >
+                                    {badge.icon} {badge.text}
+                                  </span>
+                                  */}
+                                </div>
+
+                                {result.found && result.products.length > 0 && (
+                                  <div className="result-products">
+                                    {result.products.map((product) => {
+                                      const isSelected = selectedProducts.has(
+                                        product.id,
+                                      );
+                                      return (
+                                        <div
+                                          key={product.id}
+                                          className={`product-match ${
+                                            isSelected ? 'selected' : ''
+                                          }`}
+                                          onClick={() =>
+                                            toggleProductSelection(
+                                              product.id,
+                                              result,
+                                            )
+                                          }
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            cursor: 'pointer',
+                                          }}
+                                        >
+                                          <img
+                                            src={getImageUrl(product.image)}
+                                            alt={product.name}
+                                            className="product-thumb"
+                                          />
+                                          <div
+                                            className="product-details"
+                                            style={{ flex: 1 }}
+                                          >
+                                            <div className="product-name">
+                                              {product.name}
+                                              {product.marca && (
+                                                <span className="product-brand">
+                                                  {product.marca}
+                                                </span>
+                                              )}
+                                            </div>
+                                            {product.description && (
+                                              <div className="product-description">
+                                                {product.description}
+                                              </div>
+                                            )}
+                                            <div className="product-meta">
+                                              <span className="product-price">
+                                                ${product.price.toFixed(2)}
+                                              </span>
+                                              <span className="product-stock">
+                                                Stock: {product.stock}
+                                              </span>
+                                              {product.similarity && (
+                                                <span className="similarity-badge">
+                                                  {product.similarity}% similar
+                                                </span>
+                                              )}
+                                            </div>
+                                          </div>
+                                          <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={() => {}}
+                                            className="product-checkbox"
+                                            style={{
+                                              marginLeft: '10px',
+                                              width: '20px',
+                                              height: '20px',
+                                              cursor: 'pointer',
+                                            }}
+                                          />
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+
+                                {!result.found && (
+                                  <div className="not-found-message">
+                                    <ErrorIcon sx={{ fontSize: 18, mr: 1 }} />
+                                    No se encontraron productos similares en el
+                                    catálogo
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
-                    )}
+                      )}
                     </div>
-                );
-                })
+                  );
+                },
+              )
             )}
           </div>
 
@@ -576,6 +941,7 @@ export default function ListUploader() {
                 setSelectedFile(null);
                 setUploadType(null);
                 setSelectedProducts(new Map());
+                setExpandedCategories(new Set());
               }}
             >
               <CloseIcon sx={{ mr: 1 }} />

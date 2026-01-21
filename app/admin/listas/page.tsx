@@ -72,9 +72,7 @@ export default function AdminListas() {
                         </span>
                       </td>
                       <td data-label="Tipo">{lista.tipo || 'N/A'}</td>
-                      <td data-label="Items">
-                        {lista.Itemlistas?.length || 0}
-                      </td>
+                      <td data-label="Items">{lista.Itemlista?.length || 0}</td>
                       <td data-label="Fecha">
                         {lista.fechacreacion
                           ? new Date(lista.fechacreacion).toLocaleDateString()

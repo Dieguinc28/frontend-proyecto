@@ -11,7 +11,7 @@ export interface ListaEscolar {
   fechamodificacion?: string;
   Usuario?: any;
   Estado?: any;
-  Itemlistas?: any[];
+  Itemlista?: any[];
 }
 
 export const useListasEscolares = () => {
@@ -40,7 +40,7 @@ export const useListasByUsuario = (idusuario: number) => {
     queryKey: ['listas', 'usuario', idusuario],
     queryFn: async () => {
       const { data } = await apiClient.get<ListaEscolar[]>(
-        `/listas/usuario/${idusuario}`
+        `/listas/usuario/${idusuario}`,
       );
       return data;
     },

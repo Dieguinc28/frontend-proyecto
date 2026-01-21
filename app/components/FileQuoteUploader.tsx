@@ -69,11 +69,13 @@ export default function FileQuoteUploader({
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(
-    new Map()
+    new Map(),
   );
 
   // ESTADO DEL FILTRO: 'all' (todos), 'found' (encontrados), 'not_found' (no encontrados)
-  const [filterMode, setFilterMode] = useState<'all' | 'found' | 'not_found'>('all');
+  const [filterMode, setFilterMode] = useState<'all' | 'found' | 'not_found'>(
+    'all',
+  );
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const selectedFile = acceptedFiles[0];
@@ -126,7 +128,7 @@ export default function FileQuoteUploader({
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-        }
+        },
       );
 
       setResults(data.results);
@@ -139,7 +141,7 @@ export default function FileQuoteUploader({
           if (result.confidence === 'high' || bestMatch.similarity >= 70) {
             autoSelected.set(
               `${result.searchTerm}-${bestMatch.id}`,
-              bestMatch.id
+              bestMatch.id,
             );
           }
         }
@@ -207,20 +209,17 @@ export default function FileQuoteUploader({
   };
 
   const getConfidenceBadge = (confidence?: string, similarity?: number) => {
-    if (confidence === 'high' || (similarity && similarity >= 70)) {
-      return <span className="confidence-badge high">Alta confianza</span>;
-    } else if (confidence === 'medium' || (similarity && similarity >= 50)) {
-      return <span className="confidence-badge medium">Media confianza</span>;
-    }
+    // No mostrar badges de confianza
     return null;
   };
 
   // --- FILTRADO DE LA LISTA ---
-  const filteredResults = results?.filter(r => {
-    if (filterMode === 'found') return r.found;
-    if (filterMode === 'not_found') return !r.found;
-    return true; // 'all'
-  }) || [];
+  const filteredResults =
+    results?.filter((r) => {
+      if (filterMode === 'found') return r.found;
+      if (filterMode === 'not_found') return !r.found;
+      return true; // 'all'
+    }) || [];
 
   return (
     <>
@@ -287,9 +286,7 @@ export default function FileQuoteUploader({
                     onClick={handleUpload}
                     disabled={!file || isProcessing}
                   >
-                    {isProcessing
-                      ? '🔄 Procesando...'
-                      : '🚀 Procesar Archivo'}
+                    {isProcessing ? '🔄 Procesando...' : '🚀 Procesar Archivo'}
                   </button>
                 </>
               ) : (
@@ -298,126 +295,126 @@ export default function FileQuoteUploader({
                     <div className="file-results-summary">
                       {/* --- AQUÍ ESTÁN LOS NUEVOS BOTONES --- */}
                       <div className="filter-buttons-container">
-                        
                         {/* Botón 1: VER ENCONTRADOS */}
-                        <button 
-                            className={`main-filter-btn found ${filterMode === 'found' ? 'active' : ''}`}
-                            onClick={() => setFilterMode('found')}
+                        <button
+                          className={`main-filter-btn found ${filterMode === 'found' ? 'active' : ''}`}
+                          onClick={() => setFilterMode('found')}
                         >
-                            <VisibilityIcon fontSize="small" />
-                            <span>Ver Encontrados ({stats.found})</span>
+                          <VisibilityIcon fontSize="small" />
+                          <span>Ver Encontrados ({stats.found})</span>
                         </button>
 
                         {/* Botón 2: VER NO ENCONTRADOS */}
-                        <button 
-                            className={`main-filter-btn not-found ${filterMode === 'not_found' ? 'active' : ''}`}
-                            onClick={() => setFilterMode('not_found')}
+                        <button
+                          className={`main-filter-btn not-found ${filterMode === 'not_found' ? 'active' : ''}`}
+                          onClick={() => setFilterMode('not_found')}
                         >
-                            <VisibilityOffIcon fontSize="small" />
-                            <span>No Encontrados ({stats.notFound})</span>
+                          <VisibilityOffIcon fontSize="small" />
+                          <span>No Encontrados ({stats.notFound})</span>
                         </button>
 
-                         {/* Botón 3: RESETEAR (VER TODOS) */}
-                         <button 
-                            className={`main-filter-btn all ${filterMode === 'all' ? 'active' : ''}`}
-                            onClick={() => setFilterMode('all')}
-                            title="Ver Todos"
+                        {/* Botón 3: RESETEAR (VER TODOS) */}
+                        <button
+                          className={`main-filter-btn all ${filterMode === 'all' ? 'active' : ''}`}
+                          onClick={() => setFilterMode('all')}
+                          title="Ver Todos"
                         >
-                            <RefreshIcon fontSize="small" />
+                          <RefreshIcon fontSize="small" />
                         </button>
-
                       </div>
 
                       <div className="stats-badges-simple">
-                         <small>Tasa de éxito: <strong>{stats.successRate}%</strong></small>
+                        <small>
+                          Tasa de éxito: <strong>{stats.successRate}%</strong>
+                        </small>
                       </div>
                     </div>
                   )}
 
                   <div className="file-results-list">
                     {filteredResults.length === 0 ? (
-                        <div className="empty-filter-msg">
-                            {filterMode === 'found' 
-                                ? 'No se encontraron productos exitosos.' 
-                                : filterMode === 'not_found' 
-                                ? '¡Excelente! Todos los productos fueron encontrados.' 
-                                : 'Lista vacía'}
-                        </div>
+                      <div className="empty-filter-msg">
+                        {filterMode === 'found'
+                          ? 'No se encontraron productos exitosos.'
+                          : filterMode === 'not_found'
+                            ? '¡Excelente! Todos los productos fueron encontrados.'
+                            : 'Lista vacía'}
+                      </div>
                     ) : (
-                        filteredResults.map((result, index) => (
+                      filteredResults.map((result, index) => (
                         <div key={index} className="file-result-item">
-                            <div className="result-header">
+                          <div className="result-header">
                             <span className="search-term">
-                                {result.quantity > 1 && (
+                              {result.quantity > 1 && (
                                 <strong className="quantity-badge">
-                                    {result.quantity}x{' '}
+                                  {result.quantity}x{' '}
                                 </strong>
-                                )}
-                                {result.searchTerm}
+                              )}
+                              {result.searchTerm}
                             </span>
                             {!result.found ? (
-                                <span className="not-found-badge">
+                              <span className="not-found-badge">
                                 ❌ No encontrado
-                                </span>
+                              </span>
                             ) : (
-                                getConfidenceBadge(
+                              getConfidenceBadge(
                                 result.confidence,
-                                result.products[0]?.similarity
-                                )
+                                result.products[0]?.similarity,
+                              )
                             )}
-                            </div>
+                          </div>
 
-                            {result.found && (
+                          {result.found && (
                             <div className="result-products">
-                                {result.products.map((product) => {
+                              {result.products.map((product) => {
                                 const key = `${result.searchTerm}-${product.id}`;
                                 const isSelected = selectedProducts.has(key);
 
                                 return (
-                                    <div
+                                  <div
                                     key={product.id}
                                     className={`result-product ${
-                                        isSelected ? 'selected' : ''
+                                      isSelected ? 'selected' : ''
                                     }`}
                                     onClick={() =>
-                                        toggleProductSelection(
+                                      toggleProductSelection(
                                         result.searchTerm,
-                                        product.id
-                                        )
+                                        product.id,
+                                      )
                                     }
-                                    >
+                                  >
                                     <input
-                                        type="checkbox"
-                                        checked={isSelected}
-                                        onChange={() => {}}
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      onChange={() => {}}
                                     />
                                     <div className="product-info-compact">
-                                        <div className="product-name-row">
+                                      <div className="product-name-row">
                                         <span className="product-name">
-                                            {product.name}
+                                          {product.name}
                                         </span>
                                         {product.marca && (
-                                            <span className="product-brand-badge">
+                                          <span className="product-brand-badge">
                                             {product.marca}
-                                            </span>
+                                          </span>
                                         )}
-                                        </div>
-                                        <div className="product-meta">
+                                      </div>
+                                      <div className="product-meta">
                                         <span className="product-price">
-                                            ${product.price.toFixed(2)}
+                                          ${product.price.toFixed(2)}
                                         </span>
                                         <span className="similarity-score">
-                                            {product.similarity}% similar
+                                          {product.similarity}% similar
                                         </span>
-                                        </div>
+                                      </div>
                                     </div>
-                                    </div>
+                                  </div>
                                 );
-                                })}
+                              })}
                             </div>
-                            )}
+                          )}
                         </div>
-                        ))
+                      ))
                     )}
                   </div>
 
@@ -440,84 +437,84 @@ export default function FileQuoteUploader({
           </div>
         </div>
       )}
-      
+
       {/* ESTILOS DE LOS BOTONES */}
       <style jsx>{`
         .file-results-summary {
-            background: #fff;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
+          background: #fff;
+          padding-bottom: 10px;
+          margin-bottom: 15px;
+          border-bottom: 1px solid #eee;
         }
 
         .filter-buttons-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
+          display: flex;
+          gap: 10px;
+          margin-bottom: 10px;
         }
 
         .main-filter-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px;
-            border-radius: 8px;
-            border: 2px solid transparent;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: #f3f4f6;
-            color: #6b7280;
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 12px;
+          border-radius: 8px;
+          border: 2px solid transparent;
+          font-weight: 600;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          background: #f3f4f6;
+          color: #6b7280;
         }
 
         .main-filter-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
         /* Botón Encontrados (Verde) */
         .main-filter-btn.found.active {
-            background: #ecfdf5;
-            color: #059669;
-            border-color: #059669;
-            box-shadow: inset 0 0 0 1px #059669;
+          background: #ecfdf5;
+          color: #059669;
+          border-color: #059669;
+          box-shadow: inset 0 0 0 1px #059669;
         }
 
         /* Botón No Encontrados (Rojo) */
         .main-filter-btn.not-found.active {
-            background: #fef2f2;
-            color: #dc2626;
-            border-color: #dc2626;
-            box-shadow: inset 0 0 0 1px #dc2626;
+          background: #fef2f2;
+          color: #dc2626;
+          border-color: #dc2626;
+          box-shadow: inset 0 0 0 1px #dc2626;
         }
 
         /* Botón Todos (Gris) - Pequeño */
         .main-filter-btn.all {
-            flex: 0 0 50px; 
+          flex: 0 0 50px;
         }
         .main-filter-btn.all.active {
-            background: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
+          background: #3b82f6;
+          color: white;
+          border-color: #3b82f6;
         }
 
         .stats-badges-simple {
-            text-align: center;
-            color: #6b7280;
-            margin-top: 5px;
+          text-align: center;
+          color: #6b7280;
+          margin-top: 5px;
         }
 
         .empty-filter-msg {
-            padding: 40px;
-            text-align: center;
-            color: #9ca3af;
-            font-style: italic;
-            background: #f9fafb;
-            border-radius: 8px;
-            margin-bottom: 15px;
+          padding: 40px;
+          text-align: center;
+          color: #9ca3af;
+          font-style: italic;
+          background: #f9fafb;
+          border-radius: 8px;
+          margin-bottom: 15px;
         }
       `}</style>
     </>

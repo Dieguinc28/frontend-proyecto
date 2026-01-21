@@ -66,12 +66,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       label: 'Proveedores',
       path: '/admin/proveedores',
     },
-    { icon: <PointOfSaleIcon />, label: 'Ventas', path: '/admin/ventas' },
-    {
-      icon: <RecommendIcon />,
-      label: 'Recomendaciones',
-      path: '/admin/recomendaciones',
-    },
   ];
 
   // Cerrar menú al hacer clic fuera

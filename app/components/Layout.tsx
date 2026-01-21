@@ -26,13 +26,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         { label: 'Productos', href: '/' },
         { label: `Carrito (${cart.length})`, href: '/cart' },
         { label: 'Cotizaciones', href: '/quotes' },
-        { label: 'Mis Listas', href: '/mis-listas' },
         ...(user.role === 'admin' ? [{ label: 'Admin', href: '/admin' }] : []),
       ]
     : [{ label: 'Productos', href: '/' }];
 
   // Páginas que no necesitan padding superior
-  const noPaddingPages = ['/products'];
+  const noPaddingPages = ['/', '/products'];
   const needsPadding = !noPaddingPages.includes(pathname);
 
   // No mostrar botón flotante en páginas de carrito/cotización

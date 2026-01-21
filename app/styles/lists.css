@@ -4,9 +4,9 @@
 
 /* Main Container */
 .lists-page {
-  background: #f5f7fa;
+  background: #f8fafc;
   min-height: calc(100vh - 80px);
-  padding: 2rem 0;
+  padding: 0;
 }
 
 .lists-page .container {
@@ -15,69 +15,122 @@
   padding: 0 1rem;
 }
 
-/* Header */
-.lists-header {
+/* Hero Section */
+.lists-hero {
+  background: url('/imagen-oficial.jpeg') center/cover;
+  padding: 3rem 2rem;
   text-align: center;
-  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.lists-header h1 {
-  color: #2c3e50;
-  font-size: 2rem;
+.lists-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 0;
+}
+
+.lists-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.lists-hero h1 {
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: white;
+  font-size: 2.5rem;
   font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.lists-hero p {
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.1rem;
   margin: 0;
+  font-weight: 400;
 }
 
 /* Tabs Navigation */
 .lists-tabs {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 0;
+  margin: 0;
   background: white;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  border-bottom: 2px solid #e2e8f0;
   overflow-x: auto;
 }
 
 .tab-btn {
   flex: 1;
-  min-width: 150px;
-  padding: 1rem 1.5rem;
-  background: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 1rem;
+  min-width: 200px;
+  padding: 1.25rem 2rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  font-size: 1.05rem;
   font-weight: 600;
-  color: #4a5568;
+  color: #64748b;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  position: relative;
 }
 
 .tab-btn:hover {
-  background: #f8f9fa;
-  border-color: #2e86ab;
+  background: #f8fafc;
   color: #2e86ab;
 }
 
 .tab-btn.active {
-  background: linear-gradient(135deg, #2e86ab 0%, #1e5a7a 100%);
-  color: white;
-  border-color: #2e86ab;
-  box-shadow: 0 4px 12px rgba(46, 134, 171, 0.3);
+  background: white;
+  color: #2e86ab;
+  border-bottom-color: #2e86ab;
+  font-weight: 700;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #2e86ab;
 }
 
 /* Content */
 .lists-content {
   background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  min-height: 400px;
+  padding: 3rem 2rem;
+  min-height: 500px;
 }
 
 .tab-content {
@@ -101,12 +154,24 @@
 }
 
 .coming-soon h2 {
-  color: #2c3e50;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #1e293b;
   margin-bottom: 1rem;
 }
 
 .coming-soon p {
-  color: #6c757d;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #64748b;
   font-size: 1.125rem;
 }
 
@@ -122,69 +187,100 @@
 /* Uploader Header */
 .uploader-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .uploader-header h2 {
-  color: #2c3e50;
-  font-size: 1.75rem;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #1e293b;
+  font-size: 1.8rem;
   font-weight: 700;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: 0.5px;
 }
 
 .uploader-subtitle {
-  color: #6c757d;
-  font-size: 1rem;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #64748b;
+  font-size: 1.05rem;
   margin: 0;
+  font-weight: 400;
 }
 
 /* Upload Options */
 .upload-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+  margin-bottom: 3rem;
 }
 
 .upload-card {
-  background: #f8f9fa;
-  border: 3px dashed #cbd5e0;
-  border-radius: 12px;
-  padding: 2rem;
+  background: #f8fafc;
+  border: 2px dashed #cbd5e0;
+  border-radius: 3px;
+  padding: 2.5rem 2rem;
   text-align: center;
   transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .upload-card:hover {
-  background: #f0f8ff;
+  background: white;
   border-color: #2e86ab;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(46, 134, 171, 0.15);
+  border-style: solid;
+  box-shadow: 0 4px 12px rgba(46, 134, 171, 0.15);
 }
 
 .upload-card.dragging {
-  background: #e3f2fd;
+  background: #e0f2fe;
   border-color: #2e86ab;
   border-style: solid;
   transform: scale(1.02);
 }
 
 .upload-icon {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  color: #2e86ab;
 }
 
 .upload-card h3 {
-  color: #2c3e50;
-  font-size: 1.25rem;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #1e293b;
+  font-size: 1.3rem;
   font-weight: 700;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: 0.3px;
 }
 
 .upload-description {
-  color: #6c757d;
-  font-size: 0.9rem;
-  margin: 0 0 1.5rem 0;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: 0 0 1.75rem 0;
+  line-height: 1.6;
 }
 
 .upload-btn {
@@ -192,21 +288,26 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #2e86ab 0%, #1e5a7a 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
+  padding: 0.85rem 1.75rem;
+  background: transparent;
+  color: #2e86ab;
+  border: 2px solid #2e86ab;
+  border-radius: 3px;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(46, 134, 171, 0.3);
+  transition: all 0.3s ease;
 }
 
 .upload-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(46, 134, 171, 0.4);
+  background: #2e86ab;
+  color: white;
 }
 
 .upload-btn:active {
@@ -217,7 +318,7 @@
   margin-top: 1rem;
   padding: 0.75rem;
   background: #d4edda;
-  border-radius: 6px;
+  border-radius: 3px;
   color: #155724;
   font-weight: 600;
   font-size: 0.9rem;
@@ -225,6 +326,12 @@
 
 .selected-file p {
   margin: 0;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
 }
 
 /* Upload Action */
@@ -241,24 +348,32 @@
 
 /* How it Works */
 .how-it-works {
-  background: #f0f8ff;
+  background: #f0f9ff;
   border-left: 4px solid #2e86ab;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-top: 2rem;
+  border-radius: 3px;
+  padding: 2rem;
+  margin-top: 3rem;
+  box-shadow: 0 2px 8px rgba(46, 134, 171, 0.08);
 }
 
 .info-header {
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .info-header h3 {
-  color: #2c3e50;
-  font-size: 1.125rem;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #1e293b;
+  font-size: 1.2rem;
   font-weight: 700;
   margin: 0;
+  letter-spacing: 0.3px;
 }
 
 .info-list {
@@ -268,66 +383,99 @@
 }
 
 .info-list li {
-  color: #4a5568;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #475569;
   font-size: 0.95rem;
-  line-height: 1.8;
-  padding-left: 1.5rem;
+  line-height: 1.9;
+  padding-left: 1.75rem;
   position: relative;
+  margin-bottom: 0.5rem;
 }
 
 .info-list li::before {
-  content: '•';
+  content: '→';
   color: #2e86ab;
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   position: absolute;
   left: 0;
-  top: -4px;
+  top: 0;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .lists-page {
-    padding: 1rem 0;
+    padding: 0;
   }
 
-  .lists-header h1 {
-    font-size: 1.5rem;
+  .lists-hero {
+    padding: 2rem 1.5rem;
+  }
+
+  .lists-hero h1 {
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+  }
+
+  .lists-hero p {
+    font-size: 0.95rem;
   }
 
   .lists-tabs {
-    flex-direction: column;
-    gap: 0.75rem;
+    flex-direction: row;
+    overflow-x: auto;
   }
 
   .tab-btn {
-    min-width: auto;
+    min-width: 150px;
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
   }
 
   .lists-content {
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
   }
 
   .upload-options {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 2rem;
   }
 
   .upload-card {
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
   }
 
-  .dev-badge {
-    bottom: 1rem;
-    right: 1rem;
-    font-size: 0.75rem;
-    padding: 0.5rem 1rem;
+  .uploader-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .how-it-works {
+    padding: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .uploader-header h2 {
+  .lists-hero h1 {
     font-size: 1.5rem;
+  }
+
+  .lists-hero p {
+    font-size: 0.9rem;
+  }
+
+  .tab-btn {
+    min-width: 120px;
+    padding: 0.85rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .uploader-header h2 {
+    font-size: 1.3rem;
   }
 
   .uploader-subtitle {
@@ -335,11 +483,15 @@
   }
 
   .upload-card h3 {
-    font-size: 1.125rem;
+    font-size: 1.15rem;
+  }
+
+  .upload-card {
+    padding: 1.75rem 1.25rem;
   }
 
   .how-it-works {
-    padding: 1rem;
+    padding: 1.25rem;
   }
 
   .info-list li {
@@ -355,8 +507,8 @@
 .processing-indicator {
   text-align: center;
   padding: 3rem 2rem;
-  background: #f8f9fa;
-  border-radius: 12px;
+  background: #f8fafc;
+  border-radius: 3px;
   margin: 2rem 0;
 }
 
@@ -377,13 +529,25 @@
 }
 
 .processing-indicator p {
-  color: #4a5568;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #475569;
   font-size: 1rem;
   margin: 0;
 }
 
 .processing-indicator small {
-  color: #6c757d;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #64748b;
   font-size: 0.875rem;
 }
 
@@ -395,10 +559,16 @@
   padding: 1rem 1.5rem;
   background: #fee2e2;
   border-left: 4px solid #ef4444;
-  border-radius: 8px;
+  border-radius: 3px;
   color: #991b1b;
   margin: 1.5rem 0;
   font-weight: 500;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
 }
 
 /* Results Container */
@@ -432,7 +602,7 @@
   gap: 1rem;
   padding: 1.5rem;
   background: white;
-  border-radius: 12px;
+  border-radius: 3px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease;
 }
@@ -443,73 +613,47 @@
 }
 
 .stat-card.success {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  background: #d1fae5;
   color: #065f46;
 }
 
 .stat-card.total {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  background: #dbeafe;
   color: #1e40af;
 }
 
 .stat-card.rate {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  background: #fef3c7;
   color: #92400e;
 }
 
 .stat-number {
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-size: 2rem;
   font-weight: 700;
   line-height: 1;
 }
 
 .stat-label {
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   margin-top: 0.25rem;
 }
 
-/* Confidence Breakdown */
+/* Confidence Breakdown - HIDDEN */
 .confidence-breakdown {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  padding: 1rem 1.5rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-}
-
-.confidence-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #4a5568;
-}
-
-.confidence-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.confidence-item.high .confidence-dot {
-  background: #10b981;
-}
-
-.confidence-item.medium .confidence-dot {
-  background: #f59e0b;
-}
-
-.confidence-item.low .confidence-dot {
-  background: #ef4444;
-}
-
-.confidence-item.none .confidence-dot {
-  background: #6b7280;
+  display: none;
 }
 
 /* Results List */
@@ -518,7 +662,13 @@
 }
 
 .results-list > h3 {
-  color: #2c3e50;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #1e293b;
   font-size: 1.25rem;
   font-weight: 700;
   margin: 0 0 1rem 0;
@@ -527,7 +677,7 @@
 .result-item {
   background: white;
   border: 2px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 3px;
   padding: 1.5rem;
   margin-bottom: 1rem;
   transition: all 0.2s ease;
@@ -561,27 +711,31 @@
   padding: 0.25rem 0.75rem;
   background: #2e86ab;
   color: white;
-  border-radius: 20px;
+  border-radius: 3px;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-weight: 700;
   font-size: 0.875rem;
 }
 
 .search-term {
-  color: #2c3e50;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #1e293b;
   font-weight: 600;
   font-size: 1rem;
 }
 
 .confidence-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  color: white;
-  font-weight: 600;
-  font-size: 0.875rem;
-  white-space: nowrap;
+  display: none;
 }
 
 /* Product Matches */
@@ -596,9 +750,9 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: #f8f9fa;
+  background: #f8fafc;
   border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 3px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -625,7 +779,7 @@
   width: 60px;
   height: 60px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 3px;
   background: white;
 }
 
@@ -635,7 +789,13 @@
 }
 
 .product-name {
-  color: #2c3e50;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #1e293b;
   font-weight: 600;
   font-size: 0.95rem;
   margin-bottom: 0.25rem;
@@ -649,14 +809,26 @@
   display: inline-block;
   padding: 0.125rem 0.5rem;
   background: #e2e8f0;
-  color: #4a5568;
-  border-radius: 4px;
+  color: #475569;
+  border-radius: 3px;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
 }
 
 .product-description {
-  color: #6c757d;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #64748b;
   font-size: 0.85rem;
   margin-bottom: 0.5rem;
   overflow: hidden;
@@ -672,13 +844,25 @@
 }
 
 .product-price {
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   color: #2e86ab;
   font-weight: 700;
   font-size: 1rem;
 }
 
 .product-stock {
-  color: #6c757d;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #64748b;
   font-size: 0.85rem;
 }
 
@@ -687,7 +871,13 @@
   padding: 0.25rem 0.5rem;
   background: #fef3c7;
   color: #92400e;
-  border-radius: 4px;
+  border-radius: 3px;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -699,8 +889,14 @@
   gap: 0.5rem;
   padding: 1rem;
   background: #fee2e2;
-  border-radius: 8px;
-  color: #991b1b;
+  border-radius: 3px;
+  color: #991b1c;
+  font-family:
+    'Aksioma',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-size: 0.9rem;
 }
 
@@ -732,8 +928,7 @@
   }
 
   .confidence-breakdown {
-    flex-direction: column;
-    gap: 0.75rem;
+    display: none !important;
   }
 
   .result-header {

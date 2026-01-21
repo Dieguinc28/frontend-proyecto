@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useProducts } from '../hooks/useProducts';
 import Layout from '../components/Layout';
-import ProductCard from '../components/ProductCard';
-import ProductWithScrollableVariants from '../components/ProductWithScrollableVariants';
+import ProductGroupCard from '../components/ProductGroupCard';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import GridViewIcon from '@mui/icons-material/GridView';
@@ -13,111 +12,136 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CloseIcon from '@mui/icons-material/Close';
 import type { Product } from '../types';
 
-// Función para extraer el nombre base del producto (sin color/variante/tamaño)
-const getBaseProductName = (name: string): string => {
-  // Remover colores
-  const colorPatterns =
-    /\s*(azul|rojo|negro|verde|amarillo|rosa|morado|naranja|blanco|gris)s?$/i;
-  // Remover tamaños
-  const sizePatterns =
-    /\s*(grande|mediano|pequeño|chico|mini|xl|xxl|xs|pequeña|mediana|grande|extra)$/i;
-  // Remover números de unidades al final
-  const unitPatterns = /\s*\d+\s*(unidades|pzs|pz|pcs|pack|u)$/i;
-
-  return name
-    .replace(colorPatterns, '')
-    .replace(sizePatterns, '')
-    .replace(unitPatterns, '')
-    .trim();
-};
-
-// Función para detectar si un producto tiene variantes
-const hasVariant = (name: string): boolean => {
-  const variantPatterns =
-    /(azul|rojo|negro|verde|amarillo|rosa|morado|naranja|blanco|gris|grande|mediano|pequeño|chico|mini|xl|xxl|xs|pequeña|mediana|extra)s?$/i;
-  return variantPatterns.test(name);
-};
-
-// Función para extraer el tipo de variante
-const extractVariantType = (
-  name: string,
-): { type: string; value: string } | null => {
-  const colorMatch = name.match(
-    /(azul|rojo|negro|verde|amarillo|rosa|morado|naranja|blanco|gris)s?$/i,
-  );
-  if (colorMatch) {
-    return { type: 'color', value: colorMatch[1].toLowerCase() };
-  }
-
-  const sizeMatch = name.match(
-    /(grande|mediano|pequeño|chico|mini|xl|xxl|xs|pequeña|mediana|extra)$/i,
-  );
-  if (sizeMatch) {
-    return { type: 'size', value: sizeMatch[1].toLowerCase() };
-  }
-
-  return null;
-};
-
-// Función para normalizar nombre para agrupación
-const normalizeForGrouping = (name: string, marca: string): string => {
-  // Extraer primera palabra significativa (tipo de producto)
-  const baseName = getBaseProductName(name);
-  const firstWord = baseName.split(/\s+/)[0].toLowerCase();
-
-  // Productos que típicamente tienen variantes
-  const groupableProducts = [
-    'tijera',
-    'lapiz',
-    'boligrafo',
-    'lapicero',
-    'cuaderno',
-    'libreta',
-    'marcador',
-    'plumon',
-    'borrador',
-    'regla',
-    'carpeta',
-    'folder',
-    'cartuchera',
-    'estuche',
-    'mochila',
-    'colores',
-    'crayones',
-    'goma',
-  ];
-
-  // Si es un producto agrupable, usar nombre base + marca
-  if (
-    groupableProducts.some(
-      (p) => firstWord.includes(p) || p.includes(firstWord),
-    )
-  ) {
-    return `${baseName}-${marca}`.toLowerCase();
-  }
-
-  return `${name}-${marca}-unique`.toLowerCase();
-};
-
 interface ProductGroup {
-  baseProduct: Product;
+  mainProduct: Product;
   variants: Product[];
-  hasVariants: boolean;
 }
 
 export default function ProductsPage() {
   const { data: products, isLoading } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
-  // Cerrar filtros al hacer clic en el overlay
+  // Debug: Log products count
+  useEffect(() => {
+    if (products) {
+      console.log(`Total products loaded: ${products.length}`);
+    }
+  }, [products]);
+
   const handleOverlayClick = () => {
     setShowFilters(false);
   };
+
+  // Función para obtener el nombre base del producto (sin color, tamaño, etc.)
+  const getBaseProductName = (name: string): string => {
+    let baseName = name.toLowerCase().trim();
+
+    // Eliminar emojis y símbolos
+    baseName = baseName.replace(/[⬛⬜🟦🟥🟩🟨🟪🟧]/g, '').trim();
+
+    // Eliminar colores comunes
+    const colorsToRemove = [
+      'negro',
+      'negra',
+      'azul',
+      'rojo',
+      'roja',
+      'verde',
+      'amarillo',
+      'amarilla',
+      'blanco',
+      'blanca',
+      'rosa',
+      'rosada',
+      'morado',
+      'morada',
+      'naranja',
+      'gris',
+      'celeste',
+    ];
+
+    colorsToRemove.forEach((color) => {
+      baseName = baseName.replace(new RegExp(`\\b${color}\\b`, 'gi'), '');
+    });
+
+    // Eliminar tamaños y tipos
+    const sizesToRemove = [
+      'pliego',
+      'a4',
+      'punta fina',
+      'punta gruesa',
+      'x12',
+      'x24',
+      'x4',
+      'x6',
+    ];
+    sizesToRemove.forEach((size) => {
+      baseName = baseName.replace(new RegExp(`\\b${size}\\b`, 'gi'), '');
+    });
+
+    // Eliminar paquete/caja
+    baseName = baseName.replace(/\bpaquete\b/gi, '');
+    baseName = baseName.replace(/\bcaja\b/gi, '');
+
+    // Normalizar espacios
+    baseName = baseName.replace(/\s+/g, ' ').trim();
+
+    return baseName;
+  };
+
+  // Agrupar productos por nombre base y marca
+  const groupedProducts = useMemo(() => {
+    if (!products || !Array.isArray(products)) return [];
+
+    const groups: ProductGroup[] = [];
+    const processedIds = new Set<string>();
+
+    products.forEach((product) => {
+      const productId = product._id || String(product.idproducto);
+
+      if (processedIds.has(productId)) return;
+
+      const productName = product.name || product.nombre || '';
+      const baseName = getBaseProductName(productName);
+      const productBrand = (product.marca || '').toLowerCase().trim();
+
+      // Buscar productos similares (mismo nombre base y misma marca)
+      const variants = products.filter((p) => {
+        const pId = p._id || String(p.idproducto);
+        if (pId === productId || processedIds.has(pId)) return false;
+
+        const pName = p.name || p.nombre || '';
+        const pBaseName = getBaseProductName(pName);
+        const pBrand = (p.marca || '').toLowerCase().trim();
+
+        // Agrupar si tienen el mismo nombre base Y la misma marca
+        return pBaseName === baseName && productBrand === pBrand;
+      });
+
+      // Marcar todos los productos del grupo como procesados
+      processedIds.add(productId);
+      variants.forEach((v) => {
+        const vId = v._id || String(v.idproducto);
+        processedIds.add(vId);
+      });
+
+      groups.push({
+        mainProduct: product,
+        variants: variants,
+      });
+    });
+
+    console.log(
+      `Agrupados ${products.length} productos en ${groups.length} grupos`,
+    );
+    return groups;
+  }, [products]);
 
   // Obtener categorías únicas
   const categories = useMemo(() => {
@@ -130,85 +154,12 @@ export default function ProductsPage() {
     return cats;
   }, [products]);
 
-  // Agrupar productos por nombre base similar (estilo Temu)
-  const groupedProducts = useMemo(() => {
-    if (!products || !Array.isArray(products)) return [];
-
-    const groups: Map<string, ProductGroup> = new Map();
-
-    // Primera pasada: agrupar todos los productos por nombre base
-    products.forEach((product) => {
-      const name = product.name || product.nombre || '';
-      const marca = product.marca || '';
-      const key = normalizeForGrouping(name, marca);
-
-      if (groups.has(key)) {
-        groups.get(key)!.variants.push(product);
-      } else {
-        groups.set(key, {
-          baseProduct: product,
-          variants: [product],
-          hasVariants: false,
-        });
-      }
-    });
-
-    // Convertir grupos a array
-    const result: ProductGroup[] = [];
-
-    groups.forEach((group) => {
-      if (group.variants.length > 1) {
-        // Tiene múltiples variantes
-        // Ordenar variantes por precio (menor primero como principal)
-        group.variants.sort((a, b) => {
-          const priceA = a.price || a.precioreferencial || 0;
-          const priceB = b.price || b.precioreferencial || 0;
-          return priceA - priceB;
-        });
-
-        // Calcular stock total
-        const totalStock = group.variants.reduce(
-          (sum, v) => sum + (v.stock || 0),
-          0,
-        );
-
-        // El producto con mejor precio es el principal
-        const baseProduct = { ...group.variants[0] };
-        const baseName = getBaseProductName(
-          baseProduct.name || baseProduct.nombre || '',
-        );
-
-        // Actualizar nombre base si hay variantes
-        if (hasVariant(baseProduct.name || baseProduct.nombre || '')) {
-          baseProduct.name = baseName;
-          baseProduct.nombre = baseName;
-        }
-        baseProduct.stock = totalStock;
-
-        result.push({
-          baseProduct,
-          variants: group.variants,
-          hasVariants: true,
-        });
-      } else {
-        // Solo un producto, mostrar normal
-        result.push({
-          baseProduct: group.variants[0],
-          variants: [group.variants[0]],
-          hasVariants: false,
-        });
-      }
-    });
-
-    return result;
-  }, [products]);
-
-  // Filtrar y ordenar productos agrupados
-  const filteredProducts = useMemo(() => {
-    if (!groupedProducts.length) return [];
+  // Filtrar y ordenar grupos de productos
+  const filteredGroups = useMemo(() => {
+    if (!groupedProducts || groupedProducts.length === 0) return [];
 
     let filtered = groupedProducts.filter((group) => {
-      const product = group.baseProduct;
+      const product = group.mainProduct;
       const name = product.name || product.nombre || '';
       const description = product.description || product.descripcion || '';
 
@@ -220,23 +171,13 @@ export default function ProductsPage() {
       const matchesCategory =
         selectedCategory === 'all' || category === selectedCategory;
 
-      const price =
-        typeof product.price === 'number'
-          ? product.price
-          : typeof product.precioreferencial === 'number'
-            ? product.precioreferencial
-            : parseFloat(
-                String(product.price || product.precioreferencial || 0),
-              );
-      const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
-
-      return matchesSearch && matchesCategory && matchesPrice;
+      return matchesSearch && matchesCategory;
     });
 
-    // Ordenar
+    // Ordenar grupos
     filtered.sort((a, b) => {
-      const productA = a.baseProduct;
-      const productB = b.baseProduct;
+      const productA = a.mainProduct;
+      const productB = b.mainProduct;
 
       const priceA =
         typeof productA.price === 'number'
@@ -274,12 +215,60 @@ export default function ProductsPage() {
     });
 
     return filtered;
-  }, [groupedProducts, searchTerm, selectedCategory, priceRange, sortBy]);
+  }, [groupedProducts, searchTerm, selectedCategory, sortBy]);
 
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedCategory('all');
     setSortBy('name');
+    setCurrentPage(1);
+  };
+
+  // Calcular grupos paginados
+  const totalPages = Math.ceil(filteredGroups.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedGroups = filteredGroups.slice(startIndex, endIndex);
+
+  // Resetear a página 1 cuando cambien los filtros
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory, sortBy]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) pages.push(i);
+        pages.push('...');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push('...');
+        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push('...');
+        pages.push(currentPage - 1);
+        pages.push(currentPage);
+        pages.push(currentPage + 1);
+        pages.push('...');
+        pages.push(totalPages);
+      }
+    }
+
+    return pages;
   };
 
   return (
@@ -400,14 +389,6 @@ export default function ProductsPage() {
                   ))}
                 </div>
               </div>
-
-              <div className="filter-section">
-                <h4>Disponibilidad</h4>
-                <label className="filter-option">
-                  <input type="checkbox" defaultChecked />
-                  <span>En Stock</span>
-                </label>
-              </div>
             </aside>
 
             <div className="products-main">
@@ -415,8 +396,26 @@ export default function ProductsPage() {
                 <p className="results-count">
                   {isLoading
                     ? 'Cargando...'
-                    : `${filteredProducts.length} productos encontrados`}
+                    : `${filteredGroups.length} productos encontrados`}
                 </p>
+                {filteredGroups.length > 0 && (
+                  <div className="items-per-page">
+                    <label>Mostrar:</label>
+                    <select
+                      value={itemsPerPage}
+                      onChange={(e) => {
+                        setItemsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                      className="items-select"
+                    >
+                      <option value={12}>12</option>
+                      <option value={24}>24</option>
+                      <option value={36}>36</option>
+                      <option value={48}>48</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               {isLoading ? (
@@ -424,23 +423,65 @@ export default function ProductsPage() {
                   <CircularProgress size={50} />
                   <p>Cargando productos...</p>
                 </div>
-              ) : filteredProducts.length > 0 ? (
-                <div className={`products-display ${viewMode}`}>
-                  {filteredProducts.map((group) =>
-                    group.hasVariants && group.variants.length > 1 ? (
-                      <ProductWithScrollableVariants
-                        key={group.baseProduct._id}
-                        principal={group.baseProduct}
-                        variantes={group.variants}
+              ) : filteredGroups.length > 0 ? (
+                <>
+                  <div className={`products-display ${viewMode}`}>
+                    {paginatedGroups.map((group, index) => (
+                      <ProductGroupCard
+                        key={
+                          group.mainProduct._id ||
+                          group.mainProduct.idproducto ||
+                          index
+                        }
+                        mainProduct={group.mainProduct}
+                        variants={group.variants}
                       />
-                    ) : (
-                      <ProductCard
-                        key={group.baseProduct._id}
-                        product={group.baseProduct}
-                      />
-                    ),
+                    ))}
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="pagination">
+                      <button
+                        className="pagination-btn"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        Anterior
+                      </button>
+
+                      <div className="pagination-numbers">
+                        {getPageNumbers().map((page, index) =>
+                          page === '...' ? (
+                            <span
+                              key={`ellipsis-${index}`}
+                              className="pagination-ellipsis"
+                            >
+                              ...
+                            </span>
+                          ) : (
+                            <button
+                              key={page}
+                              className={`pagination-number ${
+                                currentPage === page ? 'active' : ''
+                              }`}
+                              onClick={() => handlePageChange(page as number)}
+                            >
+                              {page}
+                            </button>
+                          ),
+                        )}
+                      </div>
+
+                      <button
+                        className="pagination-btn"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        Siguiente
+                      </button>
+                    </div>
                   )}
-                </div>
+                </>
               ) : (
                 <div className="no-results">
                   <SearchIcon className="no-results-icon" />

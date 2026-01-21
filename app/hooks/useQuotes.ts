@@ -89,3 +89,38 @@ export const useUpdateQuoteStatus = () => {
     },
   });
 };
+
+// Hook para descargar PDF de cotización
+export const useDownloadQuotePdf = () => {
+  return useMutation({
+    mutationFn: async (quoteId: string) => {
+      const response = await apiClient.get<Blob>(
+        `/quotes/${quoteId}/download`,
+        {
+          responseType: 'blob',
+        },
+      );
+
+      // Crear un enlace temporal para descargar el archivo
+      const blob = response.data;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `cotizacion-${quoteId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      return response.data;
+    },
+    onSuccess: () => {
+      // Mostrar mensaje de éxito
+      console.log('PDF descargado exitosamente');
+    },
+    onError: (error) => {
+      console.error('Error al descargar PDF:', error);
+      alert('Error al descargar el PDF. Por favor, intenta de nuevo.');
+    },
+  });
+};

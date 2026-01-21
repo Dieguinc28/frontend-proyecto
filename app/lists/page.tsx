@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '../components/Layout';
 import { useCurrentUser } from '../hooks/useAuth';
-import AuthModal from '../components/AuthModal';
 import ListUploader from '../components/ListUploader';
 import ListGenerator from '../components/ListGenerator';
 import CalculateIcon from '@mui/icons-material/Calculate';
@@ -14,14 +13,13 @@ import '../styles/lists.css';
 export default function ListsPage() {
   const router = useRouter();
   const { data: user } = useCurrentUser();
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'cotizador' | 'generator'>(
-    'cotizador'
+    'cotizador',
   );
 
   const handleTabClick = (tab: 'cotizador' | 'generator') => {
     if (!user && tab === 'generator') {
-      setShowAuthModal(true);
+      router.push('/login');
       return;
     }
     setActiveTab(tab);
@@ -30,13 +28,15 @@ export default function ListsPage() {
   return (
     <Layout>
       <div className="lists-page">
-        <div className="container">
-          {/* Header */}
-          <div className="lists-header">
-            <h1>Centro de Cotizaciones</h1>
+        {/* Hero Section */}
+        <div className="lists-hero">
+          <div className="lists-hero-content">
+            <h1>CENTRO DE COTIZACIONES</h1>
             <p>Sube tu lista escolar o crea una nueva desde cero</p>
           </div>
+        </div>
 
+        <div className="container">
           {/* Tabs Navigation */}
           <div className="lists-tabs">
             <button
@@ -71,12 +71,6 @@ export default function ListsPage() {
           </div>
         </div>
       </div>
-
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        initialMode="login"
-      />
     </Layout>
   );
 }

@@ -138,6 +138,10 @@ export default function RecomendacionesPrecio({
         .recomendaciones-header h3 {
           margin: 0;
           color: #333;
+          font-family: 'Aksioma-Condensed', sans-serif;
+          font-size: 24px;
+          font-weight: 600;
+          letter-spacing: 0.5px;
         }
 
         .status-indicators {
@@ -149,7 +153,8 @@ export default function RecomendacionesPrecio({
         .ws-status {
           font-size: 14px;
           padding: 5px 10px;
-          border-radius: 4px;
+          border-radius: 0;
+          font-family: 'Aksioma-Condensed', sans-serif;
         }
 
         .ws-status.connected {
@@ -163,17 +168,24 @@ export default function RecomendacionesPrecio({
         }
 
         .btn-sync {
-          padding: 8px 16px;
+          padding: 10px 20px;
           background: #007bff;
           color: white;
           border: none;
-          border-radius: 4px;
+          border-radius: 0;
           cursor: pointer;
           font-size: 14px;
+          font-family: 'Aksioma-Condensed', sans-serif;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          transition: all 0.3s ease;
         }
 
         .btn-sync:hover {
           background: #0056b3;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
         }
 
         .loading,
@@ -182,6 +194,7 @@ export default function RecomendacionesPrecio({
           padding: 20px;
           text-align: center;
           color: #666;
+          font-family: 'Aksioma-Condensed', sans-serif;
         }
 
         .error {
@@ -198,15 +211,17 @@ export default function RecomendacionesPrecio({
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 15px;
-          border: 1px solid #e0e0e0;
-          border-radius: 6px;
+          padding: 20px;
+          border: 2px solid #e0e0e0;
+          border-radius: 0;
           transition: all 0.3s ease;
+          background: #fff;
         }
 
         .recomendacion-card:hover {
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
           border-color: #007bff;
+          transform: translateY(-2px);
         }
 
         .recomendacion-info {
@@ -215,18 +230,23 @@ export default function RecomendacionesPrecio({
 
         .producto-info {
           margin-bottom: 8px;
-          font-size: 16px;
+          font-size: 18px;
+          font-family: 'Aksioma-Condensed', sans-serif;
+          font-weight: 600;
         }
 
         .proveedor-info,
         .precio-info {
           margin: 5px 0;
           color: #555;
+          font-family: 'Aksioma-Condensed', sans-serif;
         }
 
         .precio-info strong {
           color: #28a745;
-          font-size: 18px;
+          font-size: 22px;
+          font-family: 'Aksioma-Condensed', sans-serif;
+          font-weight: 700;
         }
 
         .recomendacion-actions {
@@ -234,23 +254,31 @@ export default function RecomendacionesPrecio({
         }
 
         .btn-comprar {
-          padding: 10px 20px;
+          padding: 12px 24px;
           background: #28a745;
           color: white;
           border: none;
-          border-radius: 4px;
+          border-radius: 0;
           cursor: pointer;
           font-size: 14px;
+          font-family: 'Aksioma-Condensed', sans-serif;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
           white-space: nowrap;
+          transition: all 0.3s ease;
         }
 
         .btn-comprar:hover:not(:disabled) {
           background: #218838;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
         }
 
         .btn-comprar:disabled {
           background: #6c757d;
           cursor: not-allowed;
+          transform: none;
         }
       `}</style>
     </div>

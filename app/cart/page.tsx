@@ -9,7 +9,6 @@ import Layout from '../components/Layout';
 import CartItem from '../components/CartItem';
 import CartSummary from '../components/CartSummary';
 import EmptyCart from '../components/EmptyCart';
-import AuthModal from '../components/AuthModal';
 import Toast from '../components/Toast';
 import FileQuoteUploader from '../components/FileQuoteUploader';
 import '../styles/cart.css';
@@ -30,7 +29,6 @@ export default function CartPage() {
 
   const { mutate: createQuote, isPending: isCreating } = useCreateQuote();
 
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: 'success' | 'error' | 'info';
@@ -44,7 +42,7 @@ export default function CartPage() {
   // Handlers
   const handleCreateQuote = () => {
     if (!user) {
-      setShowAuthModal(true);
+      router.push('/login');
       return;
     }
 
@@ -81,7 +79,7 @@ export default function CartPage() {
             type: 'error',
           });
         },
-      }
+      },
     );
   };
 
@@ -90,7 +88,7 @@ export default function CartPage() {
   };
 
   const handleAddProductsFromPdf = async (
-    productsWithQuantity: Array<{ product: any; quantity: number }>
+    productsWithQuantity: Array<{ product: any; quantity: number }>,
   ) => {
     let addedCount = 0;
     for (const item of productsWithQuantity) {
@@ -137,12 +135,6 @@ export default function CartPage() {
             <EmptyCart onGoToProducts={handleGoToProducts} />
           </div>
         </div>
-
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          initialMode="login"
-        />
 
         {toast && (
           <Toast
@@ -196,12 +188,6 @@ export default function CartPage() {
           </div>
         </div>
       </div>
-
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        initialMode="login"
-      />
 
       {toast && (
         <Toast

@@ -40,7 +40,7 @@ export default function ProductModal({
         marca: product.marca || '',
         descripcion: product.descripcion || product.description || '',
         precioreferencial: String(
-          product.precioreferencial || product.price || ''
+          product.precioreferencial || product.price || '',
         ),
         unidad: product.unidad || 'unidad',
         stock: String(product.stock || ''),
@@ -107,16 +107,21 @@ export default function ProductModal({
         precioreferencial: parseFloat(formData.precioreferencial),
         stock: parseInt(formData.stock),
         categoria: formData.categoria.trim(),
+        unidad: formData.unidad || 'unidad',
       },
-      imageFile || undefined
+      imageFile || undefined,
     );
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 2000 }}>
+      <div
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+        style={{ zIndex: 2001 }}
+      >
         <div className="modal-header">
           <h3>{mode === 'create' ? 'Nuevo Producto' : 'Editar Producto'}</h3>
           <button className="modal-close" onClick={onClose}>
@@ -159,6 +164,11 @@ export default function ProductModal({
                 onChange={(e) =>
                   setFormData({ ...formData, descripcion: e.target.value })
                 }
+                rows={3}
+                style={{
+                  resize: 'vertical',
+                  minHeight: '60px',
+                }}
               />
             </div>
 
@@ -180,13 +190,14 @@ export default function ProductModal({
             </div>
 
             <div className="form-group">
-              <label>Unidad</label>
+              <label>Unidad de Venta *</label>
               <select
                 className="form-select"
                 value={formData.unidad}
                 onChange={(e) =>
                   setFormData({ ...formData, unidad: e.target.value })
                 }
+                required
               >
                 <option value="unidad">Unidad</option>
                 <option value="paquete">Paquete</option>

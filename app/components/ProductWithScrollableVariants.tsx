@@ -97,11 +97,6 @@ export default function ProductWithScrollableVariants({
 
             <div className="principal-price-stock">
               <span className="principal-price">${price.toFixed(2)}</span>
-              {stock > 0 ? (
-                <span className="stock-badge in-stock">Stock: {stock}</span>
-              ) : (
-                <span className="stock-badge out-of-stock">Agotado</span>
-              )}
             </div>
 
             {/* Selector de cantidad */}
@@ -168,11 +163,12 @@ export default function ProductWithScrollableVariants({
                   const variantPrice = getProductPrice(variant);
                   const variantStock = variant.stock || 0;
                   const isSelected =
-                    selectedProduct._id === variant._id;
+                    selectedProduct._id === variant._id ||
+                    selectedProduct.idproducto === variant.idproducto;
 
                   return (
                     <div
-                      key={variant._id}
+                      key={variant._id || variant.idproducto}
                       className={`variant-item ${isSelected ? 'selected' : ''} ${variantStock === 0 ? 'out-of-stock' : ''}`}
                       onClick={() =>
                         variantStock > 0 && handleSelectVariant(variant)

@@ -47,10 +47,10 @@ interface SearchResponse {
 // Hook para obtener todos los productos (compatibilidad)
 export const useProducts = () => {
   return useQuery({
-    queryKey: ['products'],
+    queryKey: ['products', 'all'],
     queryFn: async () => {
       const { data } = await apiClient.get<ProductsResponse | Product[]>(
-        '/products',
+        '/products?limit=999',
       );
       // Manejar ambos formatos de respuesta
       if (Array.isArray(data)) {

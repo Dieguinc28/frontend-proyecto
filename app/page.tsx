@@ -5,7 +5,6 @@ import { useProductosDestacados } from './hooks/useProducts';
 import Layout from './components/Layout';
 import ProductCard from './components/ProductCard';
 import HeroCarousel from './components/HeroCarousel';
-import StarIcon from '@mui/icons-material/Star';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import CircularProgress from '@mui/material/CircularProgress';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -33,10 +32,23 @@ export default function Home() {
     <Layout>
       <HeroCarousel />
 
+      {/* Cotizador Info Section */}
+      <section className="home-cotizador-section">
+        <div className="container">
+          <div className="home-cotizador-content">
+            <h2 className="home-cotizador-subtitle">
+              REALIZA UNA COTIZACIÓN ONLINE
+            </h2>
+            <h3 className="home-cotizador-title">
+              Y LLÉVATE TUS ÚTILES ESCOLARES AL MEJOR PRECIO
+            </h3>
+          </div>
+        </div>
+      </section>
+
       <section className="products-section">
         <div className="container">
           <div className="section-header">
-            <StarIcon className="section-icon" style={{ color: '#f59e0b' }} />
             <h2>Productos Recomendados</h2>
             <p className="section-subtitle">
               Los mejores productos con los mejores precios para ti

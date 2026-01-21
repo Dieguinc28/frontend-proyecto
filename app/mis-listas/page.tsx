@@ -18,7 +18,7 @@ import '../styles/pages.css';
 export default function MisListasPage() {
   const { data: user, isLoading: userLoading } = useCurrentUser();
   const { data: listas, isLoading: listasLoading } = useListasByUsuario(
-    user?.id || 0
+    user?.id || 0,
   );
   const { data: estados } = useEstados();
   const createLista = useCreateListaEscolar();
@@ -115,7 +115,7 @@ export default function MisListasPage() {
                     <strong>Tipo:</strong> {lista.tipo || 'General'}
                   </p>
                   <p>
-                    <strong>Items:</strong> {lista.Itemlistas?.length || 0}
+                    <strong>Items:</strong> {lista.Itemlista?.length || 0}
                   </p>
                   <p>
                     <strong>Creada:</strong>{' '}
@@ -212,9 +212,8 @@ export default function MisListasPage() {
                   {new Date(selectedLista.fechacreacion || '').toLocaleString()}
                 </p>
               </div>
-              <h3>Items ({selectedLista.Itemlistas?.length || 0})</h3>
-              {selectedLista.Itemlistas &&
-              selectedLista.Itemlistas.length > 0 ? (
+              <h3>Items ({selectedLista.Itemlista?.length || 0})</h3>
+              {selectedLista.Itemlista && selectedLista.Itemlista.length > 0 ? (
                 <table className="admin-table">
                   <thead>
                     <tr>
@@ -224,7 +223,7 @@ export default function MisListasPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedLista.Itemlistas.map((item: any) => (
+                    {selectedLista.Itemlista.map((item: any) => (
                       <tr key={item.iditem}>
                         <td>{item.Producto?.nombre || 'N/A'}</td>
                         <td>{item.cantidad}</td>
