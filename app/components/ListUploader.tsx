@@ -333,7 +333,7 @@ export default function ListUploader() {
             <DescriptionIcon sx={{ fontSize: 64, color: '#2e86ab' }} />
           </div>
           <h3>Subir PDF</h3>
-          <p className="upload-description">Proformas o facturas</p>
+          <p className="upload-description">Listas</p>
 
           <label className="upload-btn">
             <input
@@ -366,7 +366,7 @@ export default function ListUploader() {
             <ImageIcon sx={{ fontSize: 64, color: '#2e86ab' }} />
           </div>
           <h3>Subir Imagen</h3>
-          <p className="upload-description">Fotos de listas o proformas</p>
+          <p className="upload-description">Fotos de listas</p>
 
           <label className="upload-btn">
             <input
@@ -985,3 +985,4 @@ export default function ListUploader() {
     </div>
   );
 }
+
